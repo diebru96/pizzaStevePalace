@@ -22,27 +22,51 @@ class OrderForm extends React.Component {
 
     constructor(props) {
         super(props);
-        this.state = { userId: 1, pizzaList: [], submitted: false, addForm: 0 };
+        this.state = { id: -1, userId: 1, pizzaList: [], pizzaForms: [], submitted: false, addForm: 0, infos: [], maxS: 1, maxM: 1, maxL: 1 };
+    }
+    componentDidMount() {
+        API.pizzeriaInfos().then((info) => {
+            this.setState({ infos: info, maxS: info[0].available_s, maxM: info[0].available_m, maxL: info[0].available_l });
+        })
     }
 
-    getPizzaForms = (options) => {
-        let pizzaForms = [];
-        for (let i = 0; i < this.state.addForm; i++) {
-            pizzaForms.push(
-                <PizzaForm options={options} key={i} />
-            )
+    addPizzaForm = (options) => {
+        let pizzaForms = this.state.pizzaForms;
+
+        pizzaForms.push({
+            id: this.state.addForm,
+            value: <PizzaForm options={options}
+                id={this.state.addForm}
+                key={this.state.addForm}
+                maxS={this.state.maxS}
+                maxM={this.state.maxM}
+                maxL={this.state.maxL}
+                removePizza={this.removePizza} />
         }
+        )
+
+        this.setState({ pizzaForms: pizzaForms, addForm: this.state.addForm + 1 });
         return pizzaForms;
     }
 
+    removePizza = (id) => {
+        console.log(id);
+        let pizzaForms = this.state.pizzaForms;
+        const newList = pizzaForms.filter((item) => item.id !== id);
+        this.setState({ id: id, pizzaForms: newList });
+
+    }
+
+    updateAvailability = () => {
+
+    }
 
     render() {
-        const animatedComponents = makeAnimated();
         const options = this.props.ingredientList.map((i) => { return { value: i, label: i } });
         var i;
         return (
             <Container fluid>
-                <h2>Create your order</h2>
+                <h2>Create your order {this.state.id}</h2>
                 {this.state.addForm > 0 ?
                     <Table>
                         <thead>
@@ -56,13 +80,13 @@ class OrderForm extends React.Component {
                             </tr>
                         </thead>
                         <tbody>
-                            {this.getPizzaForms(options)}
+                            {this.state.pizzaForms.map((pizza) => { return pizza.value })}
                         </tbody>
                     </Table> :
                     <p></p>
                 }
                 <p className="App-buttoncheck">
-                    <button onClick={() => { this.setState({ addForm: this.state.addForm + 1 }) }}>Add Pizza</button>
+                    <button onClick={() => { this.addPizzaForm(options) }}>Add Pizza</button>
                 </p>
 
             </Container>
