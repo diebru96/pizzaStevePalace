@@ -82,4 +82,11 @@ async function userLogout() {
     });
 }
 
-export default { addUser, userLogin, userLogout, pizzeriaInfos, isAuthenticated };
+async function getOrderList() {
+    const response = await fetch(APIURL + '/orderlist');
+    const json = await response.json();
+    return json;
+}
+
+
+export default { addUser, userLogin, userLogout, pizzeriaInfos, isAuthenticated, getOrderList };

@@ -12,52 +12,70 @@ import {
 import LoginForm from './auth/login_form';
 import OrderForm from './order/order_form';
 import UserProfile from './user/user_profile';
-
+import AvailabilityTable from './availability';
+import SignUpForm from './auth/signup'
 class App extends React.Component {
   constructor(props) {
     super(props);
-    this.state = { ingredients: ["olives", "ham", "bacon", "mushrooms", "egg", "artichokes", "seafood", "chips", "vegetables"], pizzeriaInfos: [], username: "", userlogged: false };
+    this.state = { ingredients: ["olives", "ham", "bacon", "mushrooms", "egg", "artichokes", "seafood", "chips", "vegetables"], pizzeriaInfos: [], username: "", userlogged: true, showInfos: false, homeHeader: true };
   }
 
   componentDidMount() {
-    API.pizzeriaInfos().then((infos) => {
-      this.setState({ pizzeriaInfos: infos });
-    });
-
+    this.setState({ homeHeader: true });
   }
 
+  getpizzeriaInfo = () => {
+    API.pizzeriaInfos().then((infos) => {
+      this.setState({ pizzeriaInfos: infos, showInfos: true });
+    });
+  }
   render() {
+    const greeting = 'Welcome to React';
     return (
 
       <Router>
+
+        <header className={this.state.homeHeader ? "App-header" : "App-header2"}>
+
+          <nav class="nav-menu">
+
+            <h3 className="App-titleBar"> <Link to="/" onClick={() => this.setState({ homeHeader: true })}><h3 className="App-titleBar"> Pizza Steve Palace</h3></Link></h3>
+            <ul>
+              <li class="active"><a href="/" onClick={() => this.setState({ homeHeader: true })}>Home</a></li>
+              {this.state.homeHeader ? <>
+                <li><a href="#menu">Ingredients</a></li>
+                <li><a href="#availability">Availability</a></li>
+              </> :
+                <></>}
+              <li class="book-a-table"><Link to="/order" onClick={() => this.setState({ homeHeader: false })}>Create an order</Link></li>
+              {this.state.userlogged ?
+                (
+                  <><li class="book-a-table"><Link to="/userprofile" onClick={() => this.setState({ homeHeader: false })}>USERNAME:{this.state.username}</Link></li>
+                    <li><Link to="/logout">LOGOUT</Link></li></>
+                ) :
+                (<>
+                  <li class="book-a-table"><Link to="/login" onClick={() => this.setState({ homeHeader: false })}>LOGIN</Link></li>
+                  <li class="book-a-table"><Link to="/signup">SIGN UP</Link></li>
+                </>
+                )
+              }
+            </ul>
+
+          </nav>
+          {this.state.homeHeader ?
+            <>
+              <h1>Pizza Steve Palace</h1>
+              <img src="./pizzalogo.png" className="App-logo" alt="logo" />
+            </>
+            :
+            <></>}
+
+        </header>
+
         <Switch>
           <Route exact path="/">
             <div className="App">
-              <header className="App-header">
 
-                <nav class="nav-menu">
-
-                  <h3 className="App-titleBar"> Pizza Steve Palace</h3>
-                  <ul>
-                    <li class="active"><a href="/">Home</a></li>
-                    <li><a href="#menu">Ingredients</a></li>
-                    <li><a href="#events">Availability</a></li>
-                    <li class="book-a-table"><Link to="/order">Create an order</Link></li>
-                    {this.state.userlogged ?
-                      (
-                        <><li class="book-a-table"><Link to="/userprofile">USERNAME:{this.state.username}</Link></li>
-                          <li><Link to="/logout">LOGOUT</Link></li></>
-                      ) :
-                      <li class="book-a-table"><Link to="/login">LOGIN</Link></li>
-                    }
-                  </ul>
-
-                </nav>
-
-                <h1>Pizza Steve Palace</h1>
-                <img src="./pizzalogo.png" className="App-logo" alt="logo" />
-
-              </header>
               <body>
                 <section id="menu">
                   <h2 className="App-title">List of Ingredients</h2>
@@ -78,35 +96,20 @@ class App extends React.Component {
 
                     </tbody>
                   </table>
-
+                </section>
+                <section id="availability">
                   <p className="App-buttoncheck">
-                    <button onClick={() => { }}>Check availability</button>
+                    <button onClick={() => { this.getpizzeriaInfo(); document.getElementById('availability').scrollIntoView(); }}>Check availability</button>
                   </p>
-
-                  {this.state.pizzeriaInfos.map((info) => {
-                    return (<Table bordered className="App-table">
-                      <thead>
-                        <tr>
-                          <th style={{ width: '20%' }}>Size </th>
-
-                          <th style={{ width: '40%' }}>Available </th>
-                          <th style={{ width: '40%' }}>Price</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        <tr><td> S </td><td> {info.available_s} </td><td>{info.price_s}$</td></tr>
-                        <tr><td> M </td><td> {info.available_m} </td><td>{info.price_m}$</td></tr>
-                        <tr><td> L </td><td> {info.available_l} </td><td>{info.price_l}$</td></tr>
-
-                      </tbody>
-                    </Table>)
-                  })}
-
+                  {this.state.showInfos ?
+                    <>
+                      <AvailabilityTable pizzeriaInfos={this.state.pizzeriaInfos}></AvailabilityTable>
+                      <button className="App-buttonhide" onClick={() => { this.setState({ showInfos: false }) }}>HIDE</button>
+                    </> :
+                    <p className="App-placeholder"></p>
+                  }
                   <p>
-
-
                   </p>
-
                 </section>
               </body>
             </div>
@@ -114,9 +117,12 @@ class App extends React.Component {
           <Route path="/login">
             <LoginForm></LoginForm>
           </Route>
+          <Route path="/signup">
+            <SignUpForm></SignUpForm>
+          </Route>
 
           <Route path="/order">
-            <OrderForm></OrderForm>
+            <OrderForm ingredientList={this.state.ingredients}></OrderForm>
           </Route>
 
           <Route path="/userprofile">
@@ -126,6 +132,9 @@ class App extends React.Component {
       </Router>
     );
   }
+
+
+
 }
 
 export default App;

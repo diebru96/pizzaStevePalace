@@ -40,6 +40,31 @@ app.post('/api/signup', (req, res) => {
         });
 });
 
+/*DEVO POI SPOSTARLO SOTTO AUTH !!!*/
+//CREATE ORDER
+
+app.post(BASEURI + '/order', (req, res) => {
+    const order = req.body.order;
+    const pizzas = req.body.pizzas;
+    DAO.pizzaavailability().then((v) => {
+        if ((order.tot_s <= v[0].available_small) && (order.tot_m <= v[0].available_medium) && (order.tot_l <= v[0].available_large)) {
+            const s = v[0].available_small - order.tot_s;
+            const m = v[0].available_medium - order.tot_m;
+            const l = v[0].available_large - order.tot_l;
+
+            DAO.createOrder(order).then((id) => {
+                pizzas.map((pizza) => {
+                    DAO.createPizza(id, pizza);
+                });
+                res.status(201).json({ "id": id });
+                DAO.updateAvailability(s, m, l);
+            });
+        }
+    });
+
+});
+
+
 
 ///AUTENTICAZIONE I METODI DOPO LOGIN RICHIEDONO AUTH
 app.post(BASEURI + '/login', (req, res) => {
@@ -73,6 +98,8 @@ app.post(BASEURI + '/login', (req, res) => {
             new Promise((resolve) => { setTimeout(resolve, 1000) }).then(() => res.status(401).json(authErrorObj))
         });
 });
+
+
 
 app.use(cookieParser());
 app.post('/api/logout', (req, res) => {

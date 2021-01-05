@@ -20,7 +20,7 @@ const createUser = function (row) {
 }
 exports.addUser = function (username, email, password) {
     return new Promise((resolve, reject) => {
-        const sql = 'INSERT INTO users(username, email, password) VALUES(?,?,?)';
+        const sql = 'INSERT INTO user(username, email, password) VALUES(?,?,?)';
         let hash = bcrypt.hashSync(password, 10);
         db.run(sql, [username, email, hash], function (err) {
             if (err) {
@@ -55,7 +55,7 @@ exports.checkPassword = function (password, user) {
     return bcrypt.compareSync(password, user.hash);
 };
 
-///PIZZAS
+///PIZZAS AVAILABILITY
 
 exports.pizzaavailability = function () {
     return new Promise((resolve, reject) => {
@@ -75,7 +75,41 @@ exports.updateAvailability = function (available_s, available_m, available_l) {
     return new Promise((resolve, reject) => {
         const sql = 'UPDATE pizzeria SET available_small=(?), available_medium=(?), available_large=(?)';
         let hash = bcrypt.hashSync(password, 10);
-        db.run(sql, [availbable_s, availbable_m, availbable_l], function (err) {
+        db.run(sql, [available_s, available_m, available_l], function (err) {
+            if (err) {
+                console.log(err);
+                reject(err);
+            }
+            else {
+                console.log(this.lastID);
+                resolve(this.lastID);
+            }
+        });
+    });
+};
+
+//PIZZA ORDER
+exports.createOrder = function (order) {
+    return new Promise((resolve, reject) => {
+        const sql = 'INSERT INTO order(id_user, price, tot_pizza, discount, tot_s, tot_m, tot_l) VALUES(?,?,?,?,?,?,?)';
+        db.run(sql, [order.id_user, order.price, order.tit_pizza, order.discount, order.tot_s, order.tot_m, order.tot_l], function (err) {
+            if (err) {
+                console.log(err);
+                reject(err);
+            }
+            else {
+                console.log(this.lastID);
+                resolve(this.lastID);
+            }
+        });
+    });
+};
+
+exports.createPizza = function (idOrder, pizza) {
+    return new Promise((resolve, reject) => {
+        const sql = 'INSERT INTO pizza(id_order, number, ingredients, seafood, type, price) VALUES(?,?,?,?,?,?)';
+        let hash = bcrypt.hashSync(password, 10);
+        db.run(sql, [idOrder, pizza.number, pizza.ingredients, pizza.seafood, pizza.type, pizza.price], function (err) {
             if (err) {
                 console.log(err);
                 reject(err);

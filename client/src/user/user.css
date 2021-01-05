@@ -1,0 +1,5 @@
+.user-image{
+    max-height: 250px;
+    max-width: 220px;
+    clip-path: circle(45% at 50% 50%);
+  }
