@@ -1,7 +1,13 @@
 .double-td{
-    width:400px,
+    width:400px;
 }
 
 .double-td td{
-    width:50%,
+    width:50%;
+}
+
+.App-price{
+    width:100%;
+    margin-left: 85%;
+   
 }
