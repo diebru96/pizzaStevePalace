@@ -82,6 +82,32 @@ async function userLogout() {
     });
 }
 
+/// CREAZIONE PIZZA ED ORDINE
+async function createOrder(order) {
+    return new Promise((resolve, reject) => {
+        fetch(APIURL + '/order', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ order: order }),
+        }).then((response) => {
+            if (response.ok) {
+                response.json().then((id) => {
+                    resolve(id);
+                });
+            } else {
+                // analyze the cause of error
+                response.json()
+                    .then((obj) => { reject(obj); }) // error msg in the response body
+                    .catch((err) => { reject({ errors: [{ param: "Application", msg: "Cannot parse server response" }] }) }); // something else
+            }
+        }).catch((err) => { reject({ errors: [{ param: "Server", msg: "Cannot communicate" }] }) }); // connection errors
+    });
+}
+
+
+
 async function getOrderList() {
     const response = await fetch(APIURL + '/orderlist');
     const json = await response.json();
@@ -89,4 +115,4 @@ async function getOrderList() {
 }
 
 
-export default { addUser, userLogin, userLogout, pizzeriaInfos, isAuthenticated, getOrderList };
+export default { addUser, userLogin, userLogout, pizzeriaInfos, isAuthenticated, getOrderList, createOrder };

@@ -107,17 +107,31 @@ exports.createOrder = function (order) {
 
 exports.createPizza = function (idOrder, pizza) {
     return new Promise((resolve, reject) => {
-        const sql = 'INSERT INTO pizza(id_order, number, ingredients, seafood, type, price) VALUES(?,?,?,?,?,?)';
-        let hash = bcrypt.hashSync(password, 10);
-        db.run(sql, [idOrder, pizza.number, pizza.ingredients, pizza.seafood, pizza.type, pizza.price], function (err) {
-            if (err) {
-                console.log(err);
-                reject(err);
-            }
-            else {
-                console.log(this.lastID);
-                resolve(this.lastID);
-            }
-        });
+        if (pizza.ingredients2 === "") {
+            const sql = 'INSERT INTO pizza(id_order, number, ingredients, seafood, type, price) VALUES(?,?,?,?,?,?)';
+            db.run(sql, [idOrder, pizza.number, pizza.ingredients, pizza.seafood, pizza.type, pizza.price], function (err) {
+                if (err) {
+                    console.log(err);
+                    reject(err);
+                }
+                else {
+                    console.log(this.lastID);
+                    resolve(this.lastID);
+                }
+            });
+        }
+        else {
+            const sql = 'INSERT INTO pizza(id_order, number, ingredients, seafood, type, price, second_ingredients) VALUES(?,?,?,?,?,?)';
+            db.run(sql, [idOrder, pizza.number, pizza.ingredients, pizza.seafood, pizza.type, pizza.price, pizza.ingredients2], function (err) {
+                if (err) {
+                    console.log(err);
+                    reject(err);
+                }
+                else {
+                    console.log(this.lastID);
+                    resolve(this.lastID);
+                }
+            });
+        }
     });
 };
