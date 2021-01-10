@@ -25,7 +25,7 @@ class PizzaForm extends React.Component {
 
     constructor(props) {
         super(props);
-        this.state = { number: 1, ingredients: "", ingredients2: "", special: false, pizzaType: [{ value: 0, label: "S" }], type: 0, submitted: false, val: [], val2: [], maxS: 1, maxM: 1, maxL: 1, checkedDivided: false };
+        this.state = { number: 1, ingredients: "", ingredients2: "", special: false, pizzaType: [{ value: 0, label: "S" }], type: 0, submitted: false, val: [], val2: [], maxS: 1, maxM: 1, maxL: 1, checkedDivided: false, checkedSauce: true };
         this.onChange = this.onChange.bind(this);
         this.onChange2 = this.onChange2.bind(this);
         this.onChangeType = this.onChangeType.bind(this);
@@ -61,7 +61,7 @@ class PizzaForm extends React.Component {
                          }*/
                 }
                 this.setState({ val: option, ingredients: ingredients, special: special, val2: val2 });
-                this.props.updatePizza(this.props.id, this.state.number, this.state.type, ingredients, special, ingredients2);
+                this.props.updatePizza(this.props.id, this.state.number, this.state.type, ingredients, special, this.state.checkedSauce, this.state.ingredients2);
             }
         }
         else
@@ -86,8 +86,8 @@ class PizzaForm extends React.Component {
                     ingredients2 = this.state.ingredients2;
                 }
 
-                this.setState({ val: option, ingredients: ingredients, ingredients: ingredients2, special: special, val2: val2 });
-                this.props.updatePizza(this.props.id, this.state.number, this.state.type, ingredients, special, ingredients2);
+                this.setState({ val: option, ingredients: ingredients, ingredients2: ingredients2, special: special, val2: val2 });
+                this.props.updatePizza(this.props.id, this.state.number, this.state.type, ingredients, special, this.state.checkedSauce, ingredients2);
             }
 
     };
@@ -99,22 +99,22 @@ class PizzaForm extends React.Component {
                 option = [];
             }
             if (option.length <= 3) {
-                const ingr2 = this.state.val2.map((i) => { return (i.label) });
+                const ingr2 = option.map((i) => { return (i.label) });
                 for (var i of ingr2) {
                     ingredients2 = ingredients2 + i + " ";
                 }
                 this.setState({ val2: option, ingredients2: ingredients2 });
-                this.props.updatePizza(this.props.id, this.state.number, this.state.type, this.state.ingredients, this.state.special, ingredients2);
+                this.props.updatePizza(this.props.id, this.state.number, this.state.type, this.state.ingredients, this.state.special, this.state.checkedSauce, ingredients2);
             }
         }
         else
             if (option.length <= 3) {
-                const ingr2 = this.state.val2.map((i) => { return (i.label) });
+                const ingr2 = option.map((i) => { return (i.label) });
                 for (var i of ingr2) {
                     ingredients2 = ingredients2 + i + " ";
                 }
                 this.setState({ val2: option, ingredients2: ingredients2 });
-                this.props.updatePizza(this.props.id, this.state.number, this.state.type, this.state.ingredients, this.state.special, ingredients2);
+                this.props.updatePizza(this.props.id, this.state.number, this.state.type, this.state.ingredients, this.state.special, this.state.checkedSauce, ingredients2);
             }
     };
 
@@ -125,6 +125,7 @@ class PizzaForm extends React.Component {
         var val = this.state.val;
         var val2 = this.state.val2;
         var ingr = this.state.ingredients;
+        var ingr2 = this.state.ingredients2;
         var special = this.state.special;
         if (option.value != null) {
             type = option.value;
@@ -139,30 +140,43 @@ class PizzaForm extends React.Component {
                 val = [];
                 val2 = [];
                 ingr = "";
+                ingr2 = "";
                 special = false;
             }
         }
         else
             type = 0;
-        this.setState({ pizzaType: option, action: action, type: type, number: number, val: val, val2: val2, ingredients: ingr, special: special });
-        this.props.updatePizza(this.props.id, this.state.number, type, ingr, special);
+        this.setState({ pizzaType: option, action: action, type: type, number: number, val: val, val2: val2, ingredients: ingr, special: special, ingredients2: ingr2 });
+        this.props.updatePizza(this.props.id, number, type, ingr, special, this.state.checkedSauce, ingr2);
     };
 
     handleCheckDividedChange = (event) => {
-        this.setState({ checkedDivided: event.target.checked });
+        var ingr2 = this.state.ingredients2;
+        if (!event.target.checked) {
+            ingr2 = "";
+        }
+        this.setState({ checkedDivided: event.target.checked, ingredients2: ingr2 });
+        this.props.updatePizza(this.props.id, this.state.number, this.state.type, this.state.ingredients, this.state.special, this.state.checkedSauce, ingr2);
+
+    };
+    handleCheckSauceChange = (event) => {
+        this.setState({ checkedSauce: event.target.checked });
+        this.props.updatePizza(this.props.id, this.state.number, this.state.type, this.state.ingredients, this.state.special, event.target.checked, this.state.ingredients2);
     };
 
 
     buttonMore = () => {
         if ((this.state.type == 0 && this.state.number < this.state.maxS) || (this.state.type == 1 && this.state.number < this.state.maxM) || (this.state.type == 2 && this.state.number < this.state.maxL)) {
-            this.setState({ number: this.state.number + 1 })
-            this.props.updatePizza(this.props.id, this.state.number, this.state.type, this.state.ingredients, this.state.special);
+            var n = this.state.number + 1;
+            this.setState({ number: n })
+            this.props.updatePizza(this.props.id, n, this.state.type, this.state.ingredients, this.state.special, this.state.checkedSauce, this.state.ingredients2);
         }
     }
     buttonLess = () => {
         if (this.state.number > 1) {
-            this.setState({ number: this.state.number - 1 })
-            this.props.updatePizza(this.props.id, this.state.number, this.state.type, this.state.ingredients, this.state.special);
+            var n = this.state.number - 1;
+            this.setState({ number: n })
+            this.props.updatePizza(this.props.id, n, this.state.type, this.state.ingredients, this.state.special, this.state.checkedSauce, this.state.ingredients2);
         }
     }
 
@@ -215,6 +229,19 @@ class PizzaForm extends React.Component {
                     :
                     this.getPizzaSelect(animatedComponents, options)
                 }
+                <td>
+                    <FormControlLabel
+                        control={
+                            <Checkbox
+                                checked={this.state.checkedSauce}
+                                onChange={this.handleCheckSauceChange}
+                                name="sauce"
+                                color='red'
+                            />
+                        }
+
+                    />
+                </td>
                 <td><img onClick={() => this.props.removePizza(id)} src={trash} alt='delete' /></td>
             </tr>
 

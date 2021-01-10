@@ -44,23 +44,32 @@ app.post('/api/signup', (req, res) => {
 //CREATE ORDER
 
 app.post(BASEURI + '/order', (req, res) => {
+    console.log("ENTRO IN POST CREATE ORDER");
     const order = req.body.order;
-    const pizzas = req.body.pizzas;
+    const pizzas = order.pizzas;
+    console.log(" USER ORDER " + order.id_user);
     DAO.pizzaavailability().then((v) => {
-        if ((order.tot_s <= v[0].available_small) && (order.tot_m <= v[0].available_medium) && (order.tot_l <= v[0].available_large)) {
-            const s = v[0].available_small - order.tot_s;
-            const m = v[0].available_medium - order.tot_m;
-            const l = v[0].available_large - order.tot_l;
+        console.log("FATTO CHECK SU PIZZA AVAILABILITY");
 
+        if ((order.tot_s <= v[0].available_s) && (order.tot_m <= v[0].available_m) && (order.tot_l <= v[0].available_l)) {
+            const s = v[0].available_s - order.tot_s;
+            const m = v[0].available_m - order.tot_m;
+            const l = v[0].available_l - order.tot_l;
+            console.log("L:" + l + " M:" + m + " S:" + s + "ORDER TOtS:" + order.tot_s);
             DAO.createOrder(order).then((id) => {
+                console.log("CREATO ORDINE CON ID " + id);
                 pizzas.map((pizza) => {
-                    DAO.createPizza(id, pizza);
+                    DAO.createPizza(id, pizza).then((id) => {
+                        console.log("CREATA PIZZA CON ID " + id);
+
+                    });
                 });
                 res.status(201).json({ "id": id });
                 DAO.updateAvailability(s, m, l);
             });
         }
         else {
+            console.log("ERRORE 404");
             ///AGGIUNGERE CASISTICA ERRORE
             res.status(401);
         }

@@ -73,8 +73,7 @@ exports.pizzaavailability = function () {
 
 exports.updateAvailability = function (available_s, available_m, available_l) {
     return new Promise((resolve, reject) => {
-        const sql = 'UPDATE pizzeria SET available_small=(?), available_medium=(?), available_large=(?)';
-        let hash = bcrypt.hashSync(password, 10);
+        const sql = 'UPDATE pizzeria SET available_small=(?), available_medium=(?), available_large=(?) WHERE id=1'; //Aggiungere where id=1 ?
         db.run(sql, [available_s, available_m, available_l], function (err) {
             if (err) {
                 console.log(err);
@@ -90,9 +89,10 @@ exports.updateAvailability = function (available_s, available_m, available_l) {
 
 //PIZZA ORDER
 exports.createOrder = function (order) {
+    console.log("entrato in DAO.createorder");
     return new Promise((resolve, reject) => {
-        const sql = 'INSERT INTO order(id_user, price, tot_pizza, discount, tot_s, tot_m, tot_l) VALUES(?,?,?,?,?,?,?)';
-        db.run(sql, [order.id_user, order.price, order.tit_pizza, order.discount, order.tot_s, order.tot_m, order.tot_l], function (err) {
+        const sql = 'INSERT INTO pizza_order(id_user, price, tot_pizza, discount, tot_s, tot_m, tot_l) VALUES(?,?,?,?,?,?,?)';
+        db.run(sql, [order.id_user, order.price, order.tot_pizza, order.discount, order.tot_s, order.tot_m, order.tot_l], function (err) {
             if (err) {
                 console.log(err);
                 reject(err);
@@ -108,8 +108,8 @@ exports.createOrder = function (order) {
 exports.createPizza = function (idOrder, pizza) {
     return new Promise((resolve, reject) => {
         if (pizza.ingredients2 === "") {
-            const sql = 'INSERT INTO pizza(id_order, number, ingredients, seafood, type, price) VALUES(?,?,?,?,?,?)';
-            db.run(sql, [idOrder, pizza.number, pizza.ingredients, pizza.seafood, pizza.type, pizza.price], function (err) {
+            const sql = 'INSERT INTO pizza(id_order, number, ingredients, seafood, type, price, second_ingredients, sauce) VALUES(?,?,?,?,?,?,?,?)';
+            db.run(sql, [idOrder, pizza.number, pizza.ingredients, pizza.seafood, pizza.type, pizza.price, null, pizza.sauce], function (err) {
                 if (err) {
                     console.log(err);
                     reject(err);
@@ -121,8 +121,8 @@ exports.createPizza = function (idOrder, pizza) {
             });
         }
         else {
-            const sql = 'INSERT INTO pizza(id_order, number, ingredients, seafood, type, price, second_ingredients) VALUES(?,?,?,?,?,?)';
-            db.run(sql, [idOrder, pizza.number, pizza.ingredients, pizza.seafood, pizza.type, pizza.price, pizza.ingredients2], function (err) {
+            const sql = 'INSERT INTO pizza(id_order, number, ingredients, seafood, type, price, second_ingredients, sauce) VALUES(?,?,?,?,?,?,?, ?)';
+            db.run(sql, [idOrder, pizza.number, pizza.ingredients, pizza.seafood, pizza.type, pizza.price, pizza.ingredients2, pizza.sauce], function (err) {
                 if (err) {
                     console.log(err);
                     reject(err);

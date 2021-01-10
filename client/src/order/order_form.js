@@ -22,7 +22,7 @@ class OrderForm extends React.Component {
 
     constructor(props) {
         super(props);
-        this.state = { id: -1, userId: 1, pizzaList: [], pizzaForms: [], submitted: false, addForm: 0, infos: [], maxS: 1, maxM: 1, maxL: 1, TOTprice: 0, ordered: false };
+        this.state = { id: -1, userId: 1, pizzaList: [], pizzaForms: [], submitted: false, addForm: 0, infos: [], maxS: 1, maxM: 1, maxL: 1, TOTprice: 0, ordered: false, current_s: 1, current_m: 0, current_l: 0, discount: 0 };
     }
     componentDidMount() {
         const ingr = this.props.ingredientList.map((i) => { return { value: i, label: i } });
@@ -50,14 +50,14 @@ class OrderForm extends React.Component {
         }
         )
 
-        const pizza = new Pizza(1, 0, "", false, 4);
+        const pizza = new Pizza(1, 0, "", false, 4, 1);
         let pizzaList = this.state.pizzaList;
         pizzaList.push({
             id: this.state.addForm,
             value: pizza
         })
         this.setState({ pizzaForms: pizzaForms, addForm: this.state.addForm + 1, pizzaList: pizzaList });
-        this.estimateTotalPrice(pizzaList);
+        this.estimateTotalPriceAndNumber(pizzaList);
         //  return pizzaForms;
     }
 
@@ -68,30 +68,28 @@ class OrderForm extends React.Component {
         const newPizzaList = this.state.pizzaList.filter((item) => item.id !== id);
 
         this.setState({ id: id, pizzaForms: newList, pizzaList: newPizzaList });
-        this.estimateTotalPrice(newPizzaList);
-
-
+        this.estimateTotalPriceAndNumber(newPizzaList);
     }
 
-    updatePizza = (id, number, size, ingredients, special, ingredients2) => {
+    updatePizza = (id, number, size, ingredients, special, sauce, ingredients2) => {
         const price = this.estimatePizzaPrice(number, size, special);
         let newPizza;
-        if (ingredients2 === "" || size != 2) {
-            //PIZZA UNICA
-            const pizza = new Pizza(number, size, ingredients, special, price);
-            newPizza = {
-                id: id,
-                value: pizza
-            };
-        }
-        else {
-            /// SE LA PIZZA E' DIVISA IN 2
-            const pizza = new Pizza(number, size, ingredients, special, price, ingredients2);
-            newPizza = {
-                id: id,
-                value: pizza
-            };
-        }
+        /*   if (ingredients2 === "" || size != 2) {
+               //PIZZA UNICA
+               const pizza = new Pizza(number, size, ingredients, special, price, sauce);
+               newPizza = {
+                   id: id,
+                   value: pizza
+               };
+        }*/
+        //       else {
+        /// SE LA PIZZA E' DIVISA IN 2
+        const pizza = new Pizza(number, size, ingredients, special, price, sauce, ingredients2);
+        newPizza = {
+            id: id,
+            value: pizza
+        };
+        //     }
         let newPizzaList = this.state.pizzaList.map((item) => {
             if (item.id == id) {
                 return newPizza;
@@ -100,7 +98,7 @@ class OrderForm extends React.Component {
                 return item;
         });
         //  var tutto = number + " " + size + " " + ingredients + special;
-        this.estimateTotalPrice(newPizzaList);
+        this.estimateTotalPriceAndNumber(newPizzaList);
         this.setState({ pizzaList: newPizzaList });
 
 
@@ -128,15 +126,34 @@ class OrderForm extends React.Component {
         return price;
     }
 
-    estimateTotalPrice = (newPizzaList) => {
+    estimateTotalPriceAndNumber = (newPizzaList) => {
         let prezzo = 0;
+        let current_s = 0;
+        let current_m = 0;
+        let current_l = 0;
         let priceList = newPizzaList.map((pizza) => {
+            if (pizza.value.type === 0) {
+                current_s = current_s + pizza.value.number;
+            }
+            if (pizza.value.type === 1) {
+                current_m = current_m + pizza.value.number;
+            }
+            if (pizza.value.type === 2) {
+                current_l = current_l + pizza.value.number;
+            }
             return pizza.value.price;
         });
+
         for (var p of priceList) {
             prezzo = prezzo + p;
         }
-        this.setState({ TOTprice: prezzo });
+        var discount = false;
+        if ((current_s + current_m + current_l) >= 3) {
+            prezzo = prezzo - prezzo / 10;
+            discount = true;
+        }
+
+        this.setState({ TOTprice: prezzo, current_s: current_s, current_m: current_m, current_l: current_l, discount: discount });
     }
 
     updateAvailability = (number, size) => {
@@ -146,8 +163,9 @@ class OrderForm extends React.Component {
     checkOut = () => {
         ///BISOGNA AGGIUNGERE TUTTI I CHECK SU INGREDIENTI E CONFORMITA'
         let pizzas = this.state.pizzaList.map((pizza) => { return pizza.value.toJson() });
+        const totPizzas = this.state.current_l + this.state.current_m + this.state.current_s;
         //AGGIUNGERE CONTA S M L
-        var order = new Order(this.state.userId, this.state.TOTprice, 1, 1, 1, pizzas);
+        var order = new Order(this.state.userId, this.state.TOTprice, totPizzas, this.state.current_s, this.state.current_m, this.state.current_l, pizzas, this.state.discount);
         var orderJson = order.toJson();
         API.createOrder(orderJson).then((id) => {
             this.setState({ ordered: true });
@@ -164,14 +182,15 @@ class OrderForm extends React.Component {
             return (
                 <Container fluid>
 
-                    <h2>Create your order: {this.state.pizzaList.map((pizza) => { return (pizza.value.price); })}</h2>
+                    <h2>Create your order: S: {this.state.current_s}, M: {this.state.current_m}, L: {this.state.current_l}</h2>
                     {this.state.addForm > 0 ?
                         <Table>
                             <thead>
                                 <tr>
                                     <th style={{ width: '15%' }}>N</th>
                                     <th style={{ width: '20%' }}>Size</th>
-                                    <th style={{ width: '45%' }}>Ingredients</th>
+                                    <th style={{ width: '43%' }}>Ingredients</th>
+                                    <th style={{ width: '7%' }}> Sauce </th>
                                     <th style={{ width: '15%' }}>Actions</th>
 
                                 </tr>

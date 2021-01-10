@@ -1,5 +1,5 @@
 class Order {
-    constructor(id_user, price, tot_pizza, tot_s, tot_m, tot_l, pizzas) {
+    constructor(id_user, price, tot_pizza, tot_s, tot_m, tot_l, pizzas, discount) {
 
         this.id_user = id_user;
         this.tot_pizza = tot_pizza;
@@ -8,9 +8,10 @@ class Order {
         this.tot_m = tot_m;
         this.tot_l = tot_l;
         this.pizzas = pizzas;
+        this.discount = discount;
     }
     toJson = () => {
-        return ({ id_user: this.id_user, tot_pizza: this.tot_pizza, price: this.price, tot_s: this.tot_s, tot_m: this.tot_m, tot_l: this.tot_l, pizzas: this.pizzas });
+        return ({ id_user: this.id_user, tot_pizza: this.tot_pizza, price: this.price, tot_s: this.tot_s, tot_m: this.tot_m, tot_l: this.tot_l, pizzas: this.pizzas, discount: this.discount });
     }
 }
 
