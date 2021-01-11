@@ -1,24 +1,29 @@
 import React from 'react';
 
 import Table from 'react-bootstrap/Table';
+import OrderRow from './order_row';
 function OrderListTable(props) {
     {
-        const info = props.orderList;
+        const orderList = [{ id_order: 1, TOTpizzas: 10, TOTprice: 50, pizzas: [{ type: "L", number: 2, ingredients: "cibo per gatti", sauce: false, price: 4, second_ingredients: "tonno cipolla" }, { type: "M", number: 4, ingredients: "cibo per gatti", sauce: true, price: 4, second_ingredients: "" }, { type: "L", number: 2, ingredients: "cibo per gatti", sauce: false, price: 4, second_ingredients: "" }] },
+        { id_order: 2, TOTpizzas: 4, TOTprice: 30, pizzas: [{ type: "S", number: 5, ingredients: "cibo per gatti", sauce: true, price: 4, second_ingredients: "" }] },
+        ];
+        // props.orderList;
         return (
 
             <Table bordered className="App-table">
                 <thead>
                     <tr>
-                        <th style={{ width: '20%' }}>Size </th>
-
-                        <th style={{ width: '40%' }}>Available </th>
+                        <th style={{ width: '20%' }}>Order Nr.</th>
+                        <th style={{ width: '40%' }}>Number</th>
                         <th style={{ width: '40%' }}>Price</th>
                     </tr>
                 </thead>
                 <tbody>
-                    <tr><td> S </td><td> {info.available_s} </td><td>{info.price_s}$</td></tr>
-                    <tr><td> M </td><td> {info.available_m} </td><td>{info.price_m}$</td></tr>
-                    <tr><td> L </td><td> {info.available_l} </td><td>{info.price_l}$</td></tr>
+                    {
+                        orderList.map((order) => {
+                            return (<OrderRow order={order} />)
+                        })
+                    }
                 </tbody>
             </Table>
 

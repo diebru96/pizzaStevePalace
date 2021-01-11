@@ -12,9 +12,11 @@ class UserProfile extends React.Component {
     }
 
     getOrders = () => {
+        /*
         API.getOrderList().then((orders) => {
             this.setState({ orderList: orders, showList: true });
-        });
+        });*/
+        this.setState({ showList: true });
     }
     render() {
         return (
