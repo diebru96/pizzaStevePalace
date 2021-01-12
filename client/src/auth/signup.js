@@ -15,6 +15,9 @@ class SignUpForm extends React.Component {
         this.state = { username: '', email: '', password: '', submitted: false };
     }
 
+
+    componentDidMount() {
+    }
     onChangeUsername = (event) => {
         this.setState({ username: event.target.value });
     };

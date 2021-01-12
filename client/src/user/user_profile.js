@@ -8,15 +8,17 @@ class UserProfile extends React.Component {
 
     constructor(props) {
         super(props);
-        this.state = { userId: 0, orderList: [], showList: false };
+        this.state = { userId: 0, orderList: [], showList: false, firstShow: true };
+    }
+
+    componentDidMount() {
+        ///SETTARE CONTEXT PER TOGLIERE HEADER
     }
 
     getOrders = () => {
-        /*
-        API.getOrderList().then((orders) => {
-            this.setState({ orderList: orders, showList: true });
-        });*/
-        this.setState({ showList: true });
+        API.getOrderList(1).then((orders) => {
+            this.setState({ orderList: orders, showList: true, firstShow: false });
+        });
     }
     render() {
         return (
@@ -27,9 +29,19 @@ class UserProfile extends React.Component {
                     <td><tr><h4> USERNAME: es. Diebru</h4> </tr><tr> EMAIL: es. Diebru96@gmail.com </tr></td>
                 </div>
                 <div>
-                    <p className="App-buttoncheck">
-                        <button onClick={() => { this.getOrders(); }}>Check order list</button>
-                    </p>
+                    {this.state.showList ?
+                        <p className="App-buttoncheck">
+                            <button onClick={() => { this.setState({ showList: false }) }}>Hide list</button>
+                        </p> :
+                        this.state.firstShow ?
+                            <p className="App-buttoncheck">
+                                <button onClick={() => { this.getOrders(); }}>Check order list</button>
+                            </p> :
+
+                            <p className="App-buttoncheck">
+                                <button onClick={() => { this.setState({ showList: true }) }}>Show list</button>
+                            </p>
+                    }
                     <p>
                         {this.state.showList ?
                             <>

@@ -33,6 +33,9 @@ class OrderForm extends React.Component {
         });
     }
 
+    componentDidMount() {
+    }
+
     addPizzaForm = (options) => {
         let pizzaForms = this.state.pizzaForms;
 
@@ -66,7 +69,6 @@ class OrderForm extends React.Component {
         let pizzaForms = this.state.pizzaForms;
         const newList = pizzaForms.filter((item) => item.id !== id);
         const newPizzaList = this.state.pizzaList.filter((item) => item.id !== id);
-
         this.setState({ id: id, pizzaForms: newList, pizzaList: newPizzaList });
         this.estimateTotalPriceAndNumber(newPizzaList);
     }

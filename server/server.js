@@ -41,6 +41,72 @@ app.post('/api/signup', (req, res) => {
 });
 
 /*DEVO POI SPOSTARLO SOTTO AUTH !!!*/
+
+///AUTENTICAZIONE I METODI DOPO LOGIN RICHIEDONO AUTH
+app.post(BASEURI + '/login', (req, res) => {
+    // read username and password from request body
+    const email = req.body.email;
+    const password = req.body.password;
+    console.log("LOGIN " + email + "  " + password);
+
+    // filter user from the users array by username and password
+    DAO.loginUser(email).then((user) => {
+        console.log(user.username);
+        if (user != null) {
+
+            if (DAO.checkPassword(password, user)) {
+                console.log("CHECK PASSWORD OK, user hash :" + user.hash);
+                const accessToken = jwt.sign({ userauth: user.id }, jwtSecret, { expiresIn: '20m' });
+                console.log("Setto access token");
+                res.cookie('token', accessToken, { httpOnly: true, sameSite: true, maxAge: 1000 * expireTime });
+
+                console.log("Setto COOKIE");
+
+                res.json({ username: user.username });
+                res.end();
+
+            } else {
+                res.status(401).json({ username: "WRONG PASSWORD" });
+            }
+
+        }
+    }).catch(
+
+        // Delay response when wrong user/pass is sent to avoid fast guessing attempts
+        (err) => {
+            console.log("CASO CATCH LOGIN");
+            new Promise((resolve) => { setTimeout(resolve, 1000) }).then(() => res.status(401).json({ username: "ERROR" }))
+        });
+});
+
+
+
+app.use(cookieParser());
+app.post(BASEURI + '/logout', (req, res) => {
+    res.clearCookie('token').end();
+});
+
+app.use(
+    jwtexpr({
+        secret: jwtSecret,
+        getToken: req => req.cookies.token,
+        algorithms: ['sha1', 'RS256', 'HS256'],
+    })
+);
+
+////AUTHENTICATED REST ENDPOINTS
+app.get(BASEURI + '/user', (req, res) => {
+    const user = req.user && req.user.user;
+    DAO.getUserById(user)
+        .then((user) => {
+            res.json({ id: user.id, name: user.username });
+        }).catch(
+            (err) => {
+                res.status(401).json(authErrorObj);
+            }
+        );
+});
+
 //CREATE ORDER
 
 app.post(BASEURI + '/order', (req, res) => {
@@ -79,53 +145,15 @@ app.post(BASEURI + '/order', (req, res) => {
 
 
 
-///AUTENTICAZIONE I METODI DOPO LOGIN RICHIEDONO AUTH
-app.post(BASEURI + '/login', (req, res) => {
-    // read username and password from request body
-    const { email, password } = req.body;
-
-    // filter user from the users array by username and password
-    DAO.loginUser(email).then((user) => {
-
-        if (user != null) {
-
-            if (DAO.checkPassword(password, user)) {
-
-                const accessToken = jwt.sign({ userauth: user.id }, jwtSecret, { expiresIn: '20m' });
-                const userreturn = { username: user.username };
-                const auth = { accessToken: accessToken, refreshToken: refreshToken }
-                res.cookie('token', accessToken, { httpOnly: true, sameSite: true, maxAge: 1000 * expireTime });
-
-                res.json(userreturn);
-                res.end();
-
-            } else {
-                res.json({ username: "PASSWORD ERRATA" });
-            }
-
-        }
-    }).catch(
-
-        // Delay response when wrong user/pass is sent to avoid fast guessing attempts
-        (err) => {
-            new Promise((resolve) => { setTimeout(resolve, 1000) }).then(() => res.status(401).json(authErrorObj))
-        });
+//GET PIZZA
+app.get(BASEURI + '/pizzaorder/:id', (req, res) => {
+    DAO.getPizzaInOrder(req.params.id).then((orders) => res.json(orders));
 });
 
 
-
-app.use(cookieParser());
-app.post('/api/logout', (req, res) => {
-    res.clearCookie('token').end();
+//GET ORDERS
+app.get(BASEURI + '/orderlist/:id', (req, res) => {
+    DAO.getListOrders(req.params.id).then((orders) => res.json(orders));
 });
-
-app.use(
-    jwtexpr({
-        secret: jwtSecret,
-        getToken: req => req.cookies.token,
-        algorithms: ['sha1', 'RS256', 'HS256'],
-    })
-);
-
 
 app.listen(PORT, () => console.log(`Server running on http://localhost:${PORT}/`));

@@ -108,11 +108,17 @@ async function createOrder(order) {
 
 
 
-async function getOrderList() {
-    const response = await fetch(APIURL + '/orderlist');
+async function getOrderList(user_id) {
+    const response = await fetch(APIURL + `/orderlist/${user_id}`);
+    const json = await response.json();
+    return json;
+}
+
+async function getPizzasInOrder(order_id) {
+    const response = await fetch(APIURL + `/pizzaorder/${order_id}`);
     const json = await response.json();
     return json;
 }
 
 
-export default { addUser, userLogin, userLogout, pizzeriaInfos, isAuthenticated, getOrderList, createOrder };
+export default { addUser, userLogin, userLogout, pizzeriaInfos, isAuthenticated, getOrderList, createOrder, getPizzasInOrder };

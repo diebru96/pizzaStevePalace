@@ -3,3 +3,36 @@
     max-width: 220px;
     clip-path: circle(45% at 50% 50%);
   }
+  .orderlist tr{
+    background-color: rgba(241, 236, 219, 0.212)
+ }  
+ .orderlist tr:hover td{
+    background-color: burlywood;
+ }  
+
+ 
+
+
+
+ .arrow-up {
+  width: 0; 
+  height: 100%; 
+  border-left: 10px solid transparent;
+  border-right: 10px solid transparent;
+  
+  border-bottom: 10px solid rgba(24, 24, 24, 0.575);
+  margin-left: 50%;
+  margin-top: 50%;
+  margin-bottom: 50%;
+}
+
+.arrow-down {
+  width: 0; 
+  height: 0; 
+  border-left: 10px solid transparent;
+  border-right: 10px solid transparent;
+  margin-left: 50%;
+  margin-top: 50%;
+  margin-bottom: 50%;
+  border-top: 10px solid rgba(24, 24, 24, 0.575);
+}
