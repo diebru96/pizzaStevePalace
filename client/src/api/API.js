@@ -108,8 +108,8 @@ async function createOrder(order) {
 
 
 
-async function getOrderList(user_id) {
-    const response = await fetch(APIURL + `/orderlist/${user_id}`);
+async function getOrderList() {
+    const response = await fetch(APIURL + `/orderlist`);
     const json = await response.json();
     return json;
 }

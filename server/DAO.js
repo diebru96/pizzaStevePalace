@@ -58,7 +58,7 @@ exports.checkPassword = function (password, user) {
 
 exports.getUserById = function (id) {
     return new Promise((resolve, reject) => {
-        const sql = "SELECT * FROM users WHERE id = ?"
+        const sql = "SELECT * FROM user WHERE id = ?"
         db.all(sql, [id], (err, rows) => {
             if (err)
                 reject(err);
@@ -106,11 +106,11 @@ exports.updateAvailability = function (available_s, available_m, available_l) {
 };
 
 //PIZZA ORDER
-exports.createOrder = function (order) {
+exports.createOrder = function (userid, order) {
     console.log("entrato in DAO.createorder");
     return new Promise((resolve, reject) => {
         const sql = 'INSERT INTO pizza_order(id_user, price, tot_pizza, discount, tot_s, tot_m, tot_l) VALUES(?,?,?,?,?,?,?)';
-        db.run(sql, [order.id_user, order.price, order.tot_pizza, order.discount, order.tot_s, order.tot_m, order.tot_l], function (err) {
+        db.run(sql, [userid, order.price, order.tot_pizza, order.discount, order.tot_s, order.tot_m, order.tot_l], function (err) {
             if (err) {
                 console.log(err);
                 reject(err);

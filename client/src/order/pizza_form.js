@@ -192,10 +192,10 @@ class PizzaForm extends React.Component {
         return (
             <tr><td><Row><h5>x {this.state.number} </h5>
                 <tr>
-                    <button onClick={() => this.buttonMore()}>^</button>
+                    <Button variant="outline-dark" size="sm" className="darkbutton" onClick={() => this.buttonLess()}>-</Button>
                 </tr>
                 <tr>
-                    <button onClick={() => this.buttonLess()}>v</button>
+                    <Button variant="outline-dark" size="sm" className="darkbutton2" onClick={() => this.buttonMore()}>+</Button>
                 </tr>
             </Row>
             </td>

@@ -15,25 +15,29 @@ import Order from './order';
 import Select from "react-select";
 import makeAnimated from 'react-select/animated';
 import PizzaForm from './pizza_form'
+//DIALOGUE
+import Dialog from '@material-ui/core/Dialog';
+import DialogActions from '@material-ui/core/DialogActions';
+import DialogContent from '@material-ui/core/DialogContent';
+import DialogContentText from '@material-ui/core/DialogContentText';
+import DialogTitle from '@material-ui/core/DialogTitle';
 import './order.css'
-// onChange={(values) => this.setValues(values)}
+import { AppContext } from '../app_contexts';
+import { ErrorOutlineSharp } from '@material-ui/icons';
+
 
 class OrderForm extends React.Component {
 
     constructor(props) {
         super(props);
-        this.state = { id: -1, userId: 1, pizzaList: [], pizzaForms: [], submitted: false, addForm: 0, infos: [], maxS: 1, maxM: 1, maxL: 1, TOTprice: 0, ordered: false, current_s: 1, current_m: 0, current_l: 0, discount: 0 };
+        this.state = { id: -1, userId: 1, pizzaList: [], pizzaForms: [], submitted: false, addForm: 0, infos: [], maxS: 1, maxM: 1, maxL: 1, TOTprice: 0, ordered: false, current_s: 1, current_m: 0, current_l: 0, discount: 0, numberOfPizzaError: false, allowTransaction: true, errorMessage: "", openErrorDialogue: false, openLocalErrorDialogue: false };
     }
     componentDidMount() {
         const ingr = this.props.ingredientList.map((i) => { return { value: i, label: i } });
         API.pizzeriaInfos().then((info) => {
             this.setState({ infos: info, maxS: info[0].available_s, maxM: info[0].available_m, maxL: info[0].available_l });
             this.addPizzaForm(ingr);
-
         });
-    }
-
-    componentDidMount() {
     }
 
     addPizzaForm = (options) => {
@@ -102,9 +106,6 @@ class OrderForm extends React.Component {
         //  var tutto = number + " " + size + " " + ingredients + special;
         this.estimateTotalPriceAndNumber(newPizzaList);
         this.setState({ pizzaList: newPizzaList });
-
-
-        this.updateAvailability(number, size);
     }
 
     estimatePizzaPrice = (number, size, special) => {
@@ -156,23 +157,50 @@ class OrderForm extends React.Component {
         }
 
         this.setState({ TOTprice: prezzo, current_s: current_s, current_m: current_m, current_l: current_l, discount: discount });
+        this.checkAvailability(current_s, current_m, current_l);
     }
 
-    updateAvailability = (number, size) => {
-        // this.setState()
+    checkAvailability = (s, m, l) => {
+        let allow = true;
+        let error = false;
+        if (s > this.state.maxS || m > this.state.maxM || l > this.state.maxL) {
+            allow = false;
+            error = true;
+        }
+        this.setState({ allowTransaction: allow, numberOfPizzaError: error });
+
+
     }
 
+    finalCheck = () => {
+        if (!this.state.allowTransaction) {
+            this.setState({ errorMessage: "Too many pizzas selected" });
+            return false;
+        }
+        else
+            return true;
+    }
     checkOut = () => {
-        ///BISOGNA AGGIUNGERE TUTTI I CHECK SU INGREDIENTI E CONFORMITA'
-        let pizzas = this.state.pizzaList.map((pizza) => { return pizza.value.toJson() });
-        const totPizzas = this.state.current_l + this.state.current_m + this.state.current_s;
-        //AGGIUNGERE CONTA S M L
-        var order = new Order(this.state.userId, this.state.TOTprice, totPizzas, this.state.current_s, this.state.current_m, this.state.current_l, pizzas, this.state.discount);
-        var orderJson = order.toJson();
-        API.createOrder(orderJson).then((id) => {
-            this.setState({ ordered: true });
-        });
+        if (this.finalCheck()) {
+            ///BISOGNA AGGIUNGERE TUTTI I CHECK SU INGREDIENTI E CONFORMITA'
+            let pizzas = this.state.pizzaList.map((pizza) => { return pizza.value.toJson() });
+            const totPizzas = this.state.current_l + this.state.current_m + this.state.current_s;
+            //AGGIUNGERE CONTA S M L
 
+            var order = new Order(this.state.userId, this.state.TOTprice, totPizzas, this.state.current_s, this.state.current_m, this.state.current_l, pizzas, this.state.discount);
+            var orderJson = order.toJson();
+            API.createOrder(orderJson).then((id) => {
+                if (id) {
+                    this.props.triggerPizzaReady();
+                    this.setState({ ordered: true });
+                }
+            }).catch((err) => {
+                this.setState({ openErrorDialogue: true, maxS: err.s, maxM: err.m, maxL: err.l, numberOfPizzaError: true });
+            });
+        }
+        else {
+            this.setState({ openLocalErrorDialogue: true });
+        }
     }
 
     render() {
@@ -182,9 +210,23 @@ class OrderForm extends React.Component {
         }
         else
             return (
-                <Container fluid>
 
-                    <h2>Create your order: S: {this.state.current_s}, M: {this.state.current_m}, L: {this.state.current_l}</h2>
+                <Container fluid>
+                    {this.ErrorDialogue()}
+                    {this.LocalErrorDialogue()}
+                    <h2>Create your order:</h2>
+                    {this.state.numberOfPizzaError &&
+                        <h6 className="error-message">
+                            <tr>The number of pizzas you slected is not available.</tr>
+                            {(this.state.current_s > this.state.maxS) &&
+                                <tr>Available Small Pizzas: {this.state.maxS},        Amount selected: {this.state.current_s}</tr>}
+                            {(this.state.current_m > this.state.maxM) &&
+                                <tr><td>Available Medium Pizzas: {this.state.maxM}</td><p className="error-td"></p><td> Amount selected: {this.state.current_m}</td></tr>}
+                            {(this.state.current_l > this.state.maxL) &&
+                                <tr><td>Available Large Pizzas: {this.state.maxL}</td><p className="error-td"></p><td> Amount selected: {this.state.current_l}</td></tr>}
+                        </h6>
+                    }
+
                     {this.state.addForm > 0 ?
                         <Table>
                             <thead>
@@ -213,8 +255,65 @@ class OrderForm extends React.Component {
                     </p>
 
                 </Container>
+
             );
     }
+
+    ErrorDialogue = () => {
+        return (
+            <div>
+
+                <Dialog
+                    open={this.state.openErrorDialogue}
+                    keepMounted
+                    aria-labelledby="alert-dialog-slide-title"
+                    aria-describedby="alert-dialog-slide-description"
+                >
+                    <DialogTitle id="alert-dialog-slide-title">{"Order Error"}</DialogTitle>
+                    <DialogContent>
+                        <DialogContentText id="alert-dialog-slide-description">
+                            <tr>Sorry not enough pizzas</tr>
+                            <tr>Correct your order and try again</tr>
+                        </DialogContentText>
+                    </DialogContent>
+                    <DialogActions>
+                        <Button onClick={() => this.setState({ openErrorDialogue: false })} variant="danger">
+                            OK
+                        </Button>
+                    </DialogActions>
+                </Dialog>
+            </div>
+        );
+    }
+
+    LocalErrorDialogue = () => {
+        return (
+            <div>
+
+                <Dialog
+                    open={this.state.openLocalErrorDialogue}
+                    keepMounted
+                    aria-labelledby="alert-dialog-slide-title"
+                    aria-describedby="alert-dialog-slide-description"
+                >
+                    <DialogTitle id="alert-dialog-slide-title">{"Cannot submit the order"}</DialogTitle>
+                    <DialogContent>
+                        <DialogContentText id="alert-dialog-slide-description">
+                            <tr>{this.state.errorMessage}</tr>
+                            <tr>Correct your order and try again</tr>
+                        </DialogContentText>
+                    </DialogContent>
+                    <DialogActions>
+                        <Button onClick={() => this.setState({ openLocalErrorDialogue: false })} variant="danger">
+                            OK
+                        </Button>
+                    </DialogActions>
+                </Dialog>
+            </div>
+        );
+    }
 }
+
+OrderForm.contextType = AppContext; // TO ACCESS CONTEXT VALUES WITH THIS
 
 export default OrderForm;

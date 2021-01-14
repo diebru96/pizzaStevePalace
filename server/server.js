@@ -10,7 +10,7 @@ const app = express();
 
 const jwtSecret = 'somerandomaccesstoken';
 const BASEURI = '/api';
-const expireTime = 300;
+const expireTime = 500;
 const authErrorObj = { errors: [{ 'param': 'Server', 'msg': 'Authorization error' }] };
 const cookieParser = require('cookie-parser');
 
@@ -40,7 +40,6 @@ app.post('/api/signup', (req, res) => {
         });
 });
 
-/*DEVO POI SPOSTARLO SOTTO AUTH !!!*/
 
 ///AUTENTICAZIONE I METODI DOPO LOGIN RICHIEDONO AUTH
 app.post(BASEURI + '/login', (req, res) => {
@@ -82,6 +81,7 @@ app.post(BASEURI + '/login', (req, res) => {
 
 
 app.use(cookieParser());
+
 app.post(BASEURI + '/logout', (req, res) => {
     res.clearCookie('token').end();
 });
@@ -96,12 +96,16 @@ app.use(
 
 ////AUTHENTICATED REST ENDPOINTS
 app.get(BASEURI + '/user', (req, res) => {
-    const user = req.user && req.user.user;
-    DAO.getUserById(user)
+    console.log(req.user);
+    const userid = req.user.userauth;
+    console.log(userid);
+    DAO.getUserById(userid)
         .then((user) => {
-            res.json({ id: user.id, name: user.username });
+            console.log("SUCCESSO GETUSER BY ID");
+            res.json({ id: userid, username: user.username, email: user.email });
         }).catch(
             (err) => {
+                console.log("ERRORE");
                 res.status(401).json(authErrorObj);
             }
         );
@@ -113,7 +117,8 @@ app.post(BASEURI + '/order', (req, res) => {
     console.log("ENTRO IN POST CREATE ORDER");
     const order = req.body.order;
     const pizzas = order.pizzas;
-    console.log(" USER ORDER " + order.id_user);
+    const userid = req.user.userauth;
+    console.log(" USER ORDER " + userid);
     DAO.pizzaavailability().then((v) => {
         console.log("FATTO CHECK SU PIZZA AVAILABILITY");
 
@@ -122,7 +127,7 @@ app.post(BASEURI + '/order', (req, res) => {
             const m = v[0].available_m - order.tot_m;
             const l = v[0].available_l - order.tot_l;
             console.log("L:" + l + " M:" + m + " S:" + s + "ORDER TOtS:" + order.tot_s);
-            DAO.createOrder(order).then((id) => {
+            DAO.createOrder(userid, order).then((id) => {
                 console.log("CREATO ORDINE CON ID " + id);
                 pizzas.map((pizza) => {
                     DAO.createPizza(id, pizza).then((id) => {
@@ -130,14 +135,14 @@ app.post(BASEURI + '/order', (req, res) => {
 
                     });
                 });
-                res.status(201).json({ "id": id });
+                res.status(201).json({ id: id });
                 DAO.updateAvailability(s, m, l);
             });
         }
         else {
             console.log("ERRORE 404");
             ///AGGIUNGERE CASISTICA ERRORE
-            res.status(401);
+            res.status(404).json({ id: 0, s: v[0].available_s, m: v[0].available_m, l: v[0].available_l });
         }
     });
 
@@ -152,8 +157,9 @@ app.get(BASEURI + '/pizzaorder/:id', (req, res) => {
 
 
 //GET ORDERS
-app.get(BASEURI + '/orderlist/:id', (req, res) => {
-    DAO.getListOrders(req.params.id).then((orders) => res.json(orders));
+app.get(BASEURI + '/orderlist', (req, res) => {
+    console.log(req.user.userauth);
+    DAO.getListOrders(req.user.userauth).then((orders) => res.json(orders));
 });
 
 app.listen(PORT, () => console.log(`Server running on http://localhost:${PORT}/`));
