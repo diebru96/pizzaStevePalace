@@ -30,7 +30,7 @@ class OrderForm extends React.Component {
 
     constructor(props) {
         super(props);
-        this.state = { id: -1, userId: 1, pizzaList: [], pizzaForms: [], submitted: false, addForm: 0, infos: [], maxS: 1, maxM: 1, maxL: 1, TOTprice: 0, ordered: false, current_s: 1, current_m: 0, current_l: 0, discount: 0, numberOfPizzaError: false, allowTransaction: true, errorMessage: "", openErrorDialogue: false, openLocalErrorDialogue: false };
+        this.state = { id: -1, userId: 1, pizzaList: [], pizzaForms: [], submitted: false, addForm: 0, infos: [], maxS: 1, maxM: 1, maxL: 1, TOTprice: 0, ordered: false, current_s: 1, current_m: 0, current_l: 0, discount: 0, numberOfPizzaError: false, allowTransaction: true, errorMessage: "", openErrorDialogue: false, openLocalErrorDialogue: false, returnErrorMessage: "", toLogin: false };
     }
     componentDidMount() {
         const ingr = this.props.ingredientList.map((i) => { return { value: i, label: i } });
@@ -177,8 +177,34 @@ class OrderForm extends React.Component {
             this.setState({ errorMessage: "Too many pizzas selected" });
             return false;
         }
-        else
-            return true;
+
+        else {
+            var empty = false;
+            var seafoodError = false;
+            this.state.pizzaList.map((pizza) => {
+                if (pizza.value.ingredients === "") {
+                    empty = true;
+                }
+                else
+                    if (pizza.value.ingredients2 !== "") {
+                        if ((!(pizza.value.ingredients2.includes("seafood") && pizza.value.ingredients2.includes("seafood"))) || (!((!pizza.value.ingredients2.includes("seafood")) && (!pizza.value.ingredients2.includes("seafood"))))) {
+                            seafoodError = true;
+                        }
+                    }
+            });
+            if (empty) {
+                this.setState({ errorMessage: "Each pizza should have at least 1 ingredient" });
+                return false;
+            }
+            else {
+                if (seafoodError) {
+                    this.setState({ errorMessage: "Splitted pizzas should have seafood in both halves" });
+                    return false;
+                }
+                else
+                    return true;
+            }
+        }
     }
     checkOut = () => {
         if (this.finalCheck()) {
@@ -195,7 +221,17 @@ class OrderForm extends React.Component {
                     this.setState({ ordered: true });
                 }
             }).catch((err) => {
-                this.setState({ openErrorDialogue: true, maxS: err.s, maxM: err.m, maxL: err.l, numberOfPizzaError: true });
+                if (err.id === 0) {
+                    this.setState({ openErrorDialogue: true, maxS: err.s, maxM: err.m, maxL: err.l, numberOfPizzaError: true, returnErrorMessage: "Sorry not enough available pizzas", });
+                }
+                else
+                    if (err.status === 401) {
+                        this.setState({ openErrorDialogue: true, returnErrorMessage: err.errorText });
+                    }
+                    else
+                        this.setState({ openErrorDialogue: true, returnErrorMessage: "ERROR UNKNOWN" });
+
+
             });
         }
         else {
@@ -272,7 +308,7 @@ class OrderForm extends React.Component {
                     <DialogTitle id="alert-dialog-slide-title">{"Order Error"}</DialogTitle>
                     <DialogContent>
                         <DialogContentText id="alert-dialog-slide-description">
-                            <tr>Sorry not enough pizzas</tr>
+                            <tr>{this.state.returnErrorMessage}</tr>
                             <tr>Correct your order and try again</tr>
                         </DialogContentText>
                     </DialogContent>

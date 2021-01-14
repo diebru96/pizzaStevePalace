@@ -52,14 +52,15 @@ class PizzaForm extends React.Component {
                 let val2 = this.state.val2;
                 for (var i of ingr) {
                     ingredients = ingredients + i + " ";
-                    /*        if (i === "seafood") {
-                             special = true;
-                             val2.push({
-                                 value: "seafood",
-                                 label: "seafood"
-                             });
-                         }*/
+                    if (i === "seafood") {
+                        special = true;
+                        val2.push({
+                            value: "seafood",
+                            label: "seafood"
+                        });
+                    }
                 }
+
                 this.setState({ val: option, ingredients: ingredients, special: special, val2: val2 });
                 this.props.updatePizza(this.props.id, this.state.number, this.state.type, ingredients, special, this.state.checkedSauce, this.state.ingredients2);
             }
@@ -74,11 +75,11 @@ class PizzaForm extends React.Component {
                     ingredients = ingredients + i + " ";
                     if (i === "seafood") {
                         special = true;
-                        /*    val2.push({
-                                value: "seafood",
-                                label: "seafood",
-                                isFixed: true
-                            }); */
+                        val2.push({
+                            value: "seafood",
+                            label: "seafood",
+                            isFixed: true
+                        });
                     }
                 }
                 /// SE LA PIZZA DIVISA IN 2 faccio update anche con ingredienti2
@@ -152,11 +153,25 @@ class PizzaForm extends React.Component {
 
     handleCheckDividedChange = (event) => {
         var ingr2 = this.state.ingredients2;
+        var ingr1 = this.state.ingredients1;
+        var val1 = this.state.val;
         if (!event.target.checked) {
             ingr2 = "";
         }
-        this.setState({ checkedDivided: event.target.checked, ingredients2: ingr2 });
-        this.props.updatePizza(this.props.id, this.state.number, this.state.type, this.state.ingredients, this.state.special, this.state.checkedSauce, ingr2);
+        else {
+            val1 = [];
+            ingr1 = "";
+            var j = 0;
+            for (var i of this.state.val) {
+                if (j < 3) {
+                    val1.push(i);
+                    ingr1 = ingr1 + i.label + " ";
+                    j++;
+                }
+            }
+        }
+        this.setState({ checkedDivided: event.target.checked, ingredients2: ingr2, ingredients: ingr1, val: val1 });
+        this.props.updatePizza(this.props.id, this.state.number, this.state.type, ingr1, this.state.special, this.state.checkedSauce, ingr2);
 
     };
     handleCheckSauceChange = (event) => {
@@ -186,7 +201,8 @@ class PizzaForm extends React.Component {
     render() {
         const animatedComponents = makeAnimated();
         const options = this.props.options;
-        const options2 = options.filter((item) => item.label !== "seafood");
+        //const options2 = options.filter((item) => item.label !== "seafood");
+        const options2 = options;
         const id = this.props.id;
         const optionSize = [{ value: 0, label: "S" }, { value: 1, label: "M" }, { value: 2, label: "L" }];
         return (
@@ -213,7 +229,7 @@ class PizzaForm extends React.Component {
                                     checked={this.state.checkedDivided}
                                     onChange={this.handleCheckDividedChange}
                                     name="checkedB"
-                                    color="green"
+                                    color="dark"
                                 />
                             }
                             label="divided"

@@ -114,6 +114,10 @@ app.get(BASEURI + '/user', (req, res) => {
 //CREATE ORDER
 
 app.post(BASEURI + '/order', (req, res) => {
+    if (!req.body.order) {
+        res.status(400).json({ id: -1, error: err, errorText: "Your login session is expired, please retry to login" });
+        res.end();
+    }
     console.log("ENTRO IN POST CREATE ORDER");
     const order = req.body.order;
     const pizzas = order.pizzas;
