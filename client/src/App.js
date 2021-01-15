@@ -4,10 +4,12 @@ import Table from 'react-bootstrap/Table';
 import './App.css';
 import API from './api/API';
 import {
-  BrowserRouter as Router,
+  // BrowserRouter as Router,
+  withRouter,
   Switch,
   Route,
-  Link
+  Link,
+  Redirect
 } from "react-router-dom";
 import LoginForm from './auth/login_form';
 import OrderForm from './order/order_form';
@@ -15,7 +17,6 @@ import UserProfile from './user/user_profile';
 import AvailabilityTable from './availability';
 import SignUpForm from './auth/signup'
 import { AppContext } from './app_contexts';
-import { withRouter } from 'react-router-dom';
 //DIALOGUE
 import Button from '@material-ui/core/Button';
 import Dialog from '@material-ui/core/Dialog';
@@ -25,10 +26,11 @@ import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import Slide from '@material-ui/core/Slide';
 
+
 class App extends React.Component {
   constructor(props) {
     super(props);
-    this.state = { ingredients: ["olives", "ham", "bacon", "mushrooms", "egg", "artichokes", "seafood", "chips", "vegetables"], pizzeriaInfos: [], username: "", userlogged: false, showInfos: false, homeHeader: true, message: "", authUser: {}, pizzaReady: false, orderOk: false, available_s: 10, available_m: 8, available_l: 6, timeOut: false };
+    this.state = { ingredients: ["olives", "ham", "bacon", "mushrooms", "egg", "artichokes", "seafood", "chips", "vegetables"], pizzeriaInfos: [], username: "", userlogged: false, showInfos: false, homeHeader: true, message: "", authUser: {}, pizzaReady: false, orderOk: false, available_s: 10, available_m: 8, available_l: 6, timeOut: false, authErr: "" };
   }
 
   componentDidMount() {
@@ -39,7 +41,7 @@ class App extends React.Component {
       }
     ).catch((err) => {
       //Timeout è per switchare pagina da order e user
-      this.setState({ authUser: {}, authErr: err, userLogged: false, timeOut: true, });
+      this.setState({ authUser: {}, userLogged: false, timeOut: true, });
       // this.props.history.push("/login");
     });
   }
@@ -53,7 +55,7 @@ class App extends React.Component {
   login = (email, password) => {
     API.userLogin(email, password).then(
       (user) => {
-        this.setState({ authUser: user, username: user.username, userlogged: true, timeOut: false });
+        this.setState({ authUser: user, username: user.username, userlogged: true, timeOut: false, homeHeader: true });
       }
     ).catch(
       (err) => {
@@ -75,10 +77,10 @@ class App extends React.Component {
   ///PER ERRORI LOGIN
   handleErrors(err) {
     if (err) {
-      //     if (err.id == 0 || err.id == 1) {
-      this.setState({ authErr: err.message });
-      this.props.history.push("/login");
-      // }
+      if (err.errorid == 0 || err.errorid == 1) {
+        this.setState({ authErr: err.message });
+        this.props.history.push("/login");
+      }
     }
   }
 
@@ -98,104 +100,104 @@ class App extends React.Component {
     }
     return (
       <AppContext.Provider value={value}>
-        <Router>
 
-          <header className={this.state.homeHeader ? "App-header" : "App-header2"}>
 
-            <nav class="nav-menu">
+        <header className={this.state.homeHeader ? "App-header" : "App-header2"}>
 
-              <h3 className="App-titleBar"> <Link to="/" onClick={() => this.setState({ homeHeader: true })}><h3 className="App-titleBar"> Pizza Steve Palace</h3></Link></h3>
-              <ul>
-                <li class="active"><a href="/" onClick={() => this.setState({ homeHeader: true })}>Home</a></li>
-                {this.state.homeHeader && <>
-                  <li><a href="#menu">Ingredients</a></li>
-                  <li><a href="#availability">Availability</a></li>
-                </>
-                }
-                <li class="book-a-table"><Link to={this.state.userlogged ? "/order" : "/login"} onClick={() => this.setState({ homeHeader: false, message: "You need to login to make your order" })}>Create an order</Link></li>
-                {this.state.userlogged ?
-                  (
-                    <><li class="book-a-table"><Link to="/userprofile" onClick={() => this.setState({ homeHeader: false })}>USERNAME:{this.state.username}</Link></li>
-                      <li><Link to="/" onClick={() => { this.setState({ homeHeader: true, userlogged: false, username: "" }); API.userLogout(); }}>LOGOUT</Link></li></>
-                  ) :
-                  (<>
-                    <li class="book-a-table"><Link to="/login" onClick={() => this.setState({ homeHeader: false, message: "" })}>LOGIN</Link></li>
-                    <li class="book-a-table"><Link to="/signup">SIGN UP</Link></li>
-                  </>
-                  )
-                }
-              </ul>
+          <nav class="nav-menu">
 
-            </nav>
-            {this.state.homeHeader &&
-              <>
-                <h1>Pizza Steve Palace</h1>
-                <img src="./pizzalogo.png" className="App-logo" alt="logo" />
+            <h3 className="App-titleBar"> <Link to="/" onClick={() => this.setState({ homeHeader: true })}><h3 className="App-titleBar"> Pizza Steve Palace</h3></Link></h3>
+            <ul>
+              <li class="active"><a href="/" onClick={() => this.setState({ homeHeader: true })}>Home</a></li>
+              {this.state.homeHeader && <>
+                <li><a href="#menu">Ingredients</a></li>
+                <li><a href="#availability">Availability</a></li>
               </>
+              }
+              <li class="book-a-table"><Link to={this.state.userlogged ? "/order" : "/login"} onClick={() => this.setState({ homeHeader: false, message: "You need to login to make your order" })}>Create an order</Link></li>
+              {this.state.userlogged ?
+                (
+                  <><li class="book-a-table"><Link to="/userprofile" onClick={() => this.setState({ homeHeader: false })}>USERNAME:{this.state.username}</Link></li>
+                    <li><Link to="/" onClick={() => { this.setState({ homeHeader: true, userlogged: false, username: "" }); API.userLogout(); }}>LOGOUT</Link></li></>
+                ) :
+                (<>
+                  <li class="book-a-table"><Link to="/login" onClick={() => this.setState({ message: "" })}>LOGIN</Link></li>
+                  <li class="book-a-table"><Link to="/signup">SIGN UP</Link></li>
+                </>
+                )
+              }
+            </ul>
 
-            }
+          </nav>
+          {this.state.homeHeader &&
+            <>
+              <h1>Pizza Steve Palace</h1>
+              <img src="./pizzalogo.png" className="App-logo" alt="logo" />
+            </>
 
-          </header>
-          {this.OrderOkDialogue("Your order has been accepted", "You will be notified when it is ready.")}
-          {this.PizzaDialogue("Your pizzas are ready", "Hi " + this.state.authUser.email + ".", "You can collect your pizzas at Pizza Steve Palace.")}
-          <Switch>
-            <Route exact path="/">
-              <div className="App">
+          }
 
-                <body>
-                  <section id="menu">
-                    <h2 className="App-title">List of Ingredients</h2>
+        </header>
+        {this.OrderOkDialogue("Your order has been accepted", "You will be notified when it is ready.")}
+        {this.PizzaDialogue("Your pizzas are ready", "Hi " + this.state.authUser.email + ".", "You can collect your pizzas at Pizza Steve Palace.")}
+        <Switch>
+          <Route exact path="/">
+            <div className="App">
 
-                    <table className="App-table">
-                      <thead>
+              <body>
+                <section id="menu">
+                  <h2 className="App-title">List of Ingredients</h2>
 
-                        <tr>
-                          <th style={{ width: '50%' }}></th>
-                          <th style={{ width: '50%' }}></th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        <td><Image /></td>
-                        <td>
-                          {this.state.ingredients.map((i) => { return <tr>{i}</tr>; })}
-                        </td>
+                  <table className="App-table">
+                    <thead>
 
-                      </tbody>
-                    </table>
-                  </section>
-                  <section id="availability">
-                    <p className="App-buttoncheck">
-                      <button onClick={() => { this.getpizzeriaInfo(); document.getElementById('availability').scrollIntoView(); }}>Check availability</button>
-                    </p>
-                    {this.state.showInfos ?
-                      <>
-                        <AvailabilityTable pizzeriaInfos={this.state.pizzeriaInfos}></AvailabilityTable>
-                        <button className="App-buttonhide" onClick={() => { this.setState({ showInfos: false }) }}>HIDE</button>
-                      </> :
-                      <p className="App-placeholder"></p>
-                    }
-                    <p>
-                    </p>
-                  </section>
-                </body>
-              </div>
-            </Route>
-            <Route path="/login">
-              <LoginForm message={this.state.message} login={this.login}></LoginForm>
-            </Route>
-            <Route path="/signup">
-              <SignUpForm></SignUpForm>
-            </Route>
+                      <tr>
+                        <th style={{ width: '50%' }}></th>
+                        <th style={{ width: '50%' }}></th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <td><Image /></td>
+                      <td>
+                        {this.state.ingredients.map((i) => { return <tr>{i}</tr>; })}
+                      </td>
 
-            <Route path="/order">
-              <OrderForm ingredientList={this.state.ingredients} triggerPizzaReady={this.triggerPizzaReady}></OrderForm>
-            </Route>
+                    </tbody>
+                  </table>
+                </section>
+                <section id="availability">
+                  <p className="App-buttoncheck">
+                    <button onClick={() => { this.getpizzeriaInfo(); document.getElementById('availability').scrollIntoView(); }}>Check availability</button>
+                  </p>
+                  {this.state.showInfos ?
+                    <>
+                      <AvailabilityTable pizzeriaInfos={this.state.pizzeriaInfos}></AvailabilityTable>
+                      <button className="App-buttonhide" onClick={() => { this.setState({ showInfos: false }) }}>HIDE</button>
+                    </> :
+                    <p className="App-placeholder"></p>
+                  }
+                  <p>
+                  </p>
+                </section>
+              </body>
+            </div>
+          </Route>
+          <Route path="/login">
+            <LoginForm message={this.state.message} login={this.login}></LoginForm>
+          </Route>
+          <Route path="/signup">
+            <SignUpForm></SignUpForm>
+          </Route>
 
-            <Route path="/userprofile">
-              <UserProfile></UserProfile>
-            </Route>
-          </Switch>
-        </Router>
+          <Route path="/order">
+            <OrderForm ingredientList={this.state.ingredients} triggerPizzaReady={this.triggerPizzaReady}></OrderForm>
+          </Route>
+
+          <Route path="/userprofile">
+            <UserProfile></UserProfile>
+          </Route>
+        </Switch>
+
       </AppContext.Provider>
     );
   }
@@ -262,4 +264,4 @@ const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
 });
 
-export default App;
+export default withRouter(App);

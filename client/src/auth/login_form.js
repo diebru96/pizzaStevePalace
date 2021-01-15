@@ -18,9 +18,6 @@ class LoginForm extends React.Component {
         this.state = { email: '', password: '', submitted: false, username: 'non presente' };
     }
 
-    componentDidMount() {
-
-    }
 
     onChangeUsername = (event) => {
         this.setState({ email: event.target.value });
@@ -34,23 +31,6 @@ class LoginForm extends React.Component {
         event.preventDefault();
         login(this.state.email, this.state.password);
         this.setState({ submitted: true });
-        //this.setState({ accessToken: 'presente' });
-
-
-        /*   API.userLogin(this.state.email, this.state.password).then(
-               (userreturn) => {
-                   if (userreturn.username != null) {
-                       this.setState({ username: userreturn.username });
-                       //   context.updateUser(userreturn.username);
-                       // this.setState({ submitted: true });
-                   }
-                   else {
-                       this.setState({ username: "EDDY" });
-                   }
-   
-               }
-           );*/
-
     }
 
     render() {
@@ -74,7 +54,7 @@ class LoginForm extends React.Component {
                                     Log-in to your account {this.state.username}
                                 </div>
                             </h2>
-                            <h6 className="error-message">{context.authError}</h6>
+                            <h6 className="error-message">{context.authErr}</h6>
                             <Form method="POST" onSubmit={(event) => this.handleSubmit(event, this.props.login)}>
                                 <Form.Group controlId="username">
                                     <Form.Label>E-mail</Form.Label>
@@ -87,9 +67,11 @@ class LoginForm extends React.Component {
                                 </Form.Group>
 
                                 <Button variant="primary" type="submit">Login</Button>
-                                <p> <Link to="/">Back</Link></p>
-                            </Form>
+                                <p> </p>
+                                <p> </p>
+                                <p> Haven't got your account yet?  <Link to="/signup"> Register</Link> </p>
 
+                            </Form>
 
                         </Col>
                     </Container>
@@ -102,4 +84,6 @@ class LoginForm extends React.Component {
 
 
 }
+
+
 export default LoginForm;

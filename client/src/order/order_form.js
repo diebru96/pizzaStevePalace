@@ -23,8 +23,6 @@ import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import './order.css'
 import { AppContext } from '../app_contexts';
-import { ErrorOutlineSharp } from '@material-ui/icons';
-
 
 class OrderForm extends React.Component {
 
@@ -223,7 +221,7 @@ class OrderForm extends React.Component {
                 if (id) {
                     this.props.triggerPizzaReady();
                     var appcontext = this.context;
-                    appcontext.changeHeader(false);
+                    appcontext.changeHeader(true);
                     this.setState({ ordered: true });
                 }
             }).catch((err) => {
@@ -231,7 +229,7 @@ class OrderForm extends React.Component {
                     this.setState({ openErrorDialogue: true, maxS: err.s, maxM: err.m, maxL: err.l, numberOfPizzaError: true, returnErrorMessage: "Sorry not enough available pizzas", });
                 }
                 else
-                    if (err.status && err.status === 401) {
+                    if (err.id === -1) {
                         this.setState({ openErrorDialogue: true, returnErrorMessage: err.errorText, timeOut: true });
                     }
                     else

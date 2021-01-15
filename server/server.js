@@ -79,7 +79,7 @@ app.post(BASEURI + '/login', (req, res) => {
         // Delay response when wrong user/pass is sent to avoid fast guessing attempts
         (err) => {
             console.log("CASO CATCH LOGIN");
-            new Promise((resolve) => { setTimeout(resolve, 1000) }).then(() => res.status(401).json({ username: "ERROR" }))
+            new Promise((resolve) => { setTimeout(resolve, 1000) }).then(() => res.status(401).json({errorid:0, message: "email non valida"}))
         });
 });
 
@@ -98,6 +98,13 @@ app.use(
         algorithms: ['sha1', 'RS256', 'HS256'],
     })
 );
+
+// To return a better object in case of errors
+app.use(function (err, req, res, next) {
+    if (err.name === 'UnauthorizedError') {
+        res.status(401).json({id:-1,err: "Authorization error"});
+    }
+});
 
 ////AUTHENTICATED REST ENDPOINTS
 app.get(BASEURI + '/user', (req, res) => {
