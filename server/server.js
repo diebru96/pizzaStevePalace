@@ -102,7 +102,7 @@ app.use(
 // To return a better object in case of errors
 app.use(function (err, req, res, next) {
     if (err.name === 'UnauthorizedError') {
-        res.status(401).json({id:-1,err: "Authorization error"});
+        res.status(401).json({id:-1,errtype: "Authorization error", errorText: "Your login session is expired, please retry to login"});
     }
 });
 

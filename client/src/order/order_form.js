@@ -230,6 +230,7 @@ class OrderForm extends React.Component {
                 }
                 else
                     if (err.id === -1) {
+                        this.context.sessionTimedOut();
                         this.setState({ openErrorDialogue: true, returnErrorMessage: err.errorText, timeOut: true });
                     }
                     else

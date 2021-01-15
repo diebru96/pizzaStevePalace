@@ -88,6 +88,10 @@ class App extends React.Component {
     this.setState({ homeHeader: value })
   }
 
+  sessionTimedOut = () => {
+    this.setState({ userlogged: false, username: "", authUser: {} });
+  }
+
 
   render() {
     const value = {
@@ -96,6 +100,7 @@ class App extends React.Component {
       homeHeader: this.state.homeHeader,
       userLogged: this.state.userlogged,
       timeOut: this.state.timeOut,
+      sessionTimedOut: this.sessionTimedOut,
       changeHeader: this.changeHeader
     }
     return (
@@ -118,7 +123,7 @@ class App extends React.Component {
               {this.state.userlogged ?
                 (
                   <><li class="book-a-table"><Link to="/userprofile" onClick={() => this.setState({ homeHeader: false })}>USERNAME:{this.state.username}</Link></li>
-                    <li><Link to="/" onClick={() => { this.setState({ homeHeader: true, userlogged: false, username: "" }); API.userLogout(); }}>LOGOUT</Link></li></>
+                    <li><Link to="/" onClick={() => { this.setState({ homeHeader: true, userlogged: false, username: "", authUser: {} }); API.userLogout(); }}>LOGOUT</Link></li></>
                 ) :
                 (<>
                   <li class="book-a-table"><Link to="/login" onClick={() => this.setState({ message: "" })}>LOGIN</Link></li>

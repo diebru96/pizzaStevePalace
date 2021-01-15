@@ -130,12 +130,24 @@ class PizzaForm extends React.Component {
         var special = this.state.special;
         if (option.value != null) {
             type = option.value;
-            if (type == 0 && number > this.state.maxS)
-                number = this.state.maxS;
-            if (type == 1 && number > this.state.maxM)
-                number = this.state.maxM;
-            if (type == 2 && number > this.state.maxL)
-                number = this.state.maxL;
+            if (type == 0 && number > this.state.maxS) {
+                if (this.state.maxS > 0)
+                    number = this.state.maxS;
+                else
+                    number = 1;
+            }
+            if (type == 1 && number > this.state.maxM) {
+                if (this.state.maxM > 0)
+                    number = this.state.maxM;
+                else
+                    number = 1;
+            }
+            if (type == 2 && number > this.state.maxL) {
+                if (this.state.maxL > 0)
+                    number = this.state.maxL;
+                else
+                    number = 1;
+            }
 
             if (type < this.state.type) {
                 val = [];

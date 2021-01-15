@@ -23,6 +23,9 @@ class UserProfile extends React.Component {
         API.getOrderList().then((orders) => {
             this.setState({ orderList: orders, showList: true, firstShow: false });
         }).catch((err) => {
+            if (err.id === -1) {
+                this.context.sessionTimedOut();
+            }
             this.setState({ redirect: true });
         });
     }
