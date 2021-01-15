@@ -61,12 +61,17 @@ app.post(BASEURI + '/login', (req, res) => {
 
                 console.log("Setto COOKIE");
 
-                res.json({ username: user.username });
+                res.json({ username: user.username, email: user.email });
                 res.end();
 
             } else {
-                res.status(401).json({ username: "WRONG PASSWORD" });
+                res.status(401).json({errorid:1, message: "password errata" });
             }
+
+        }
+        else
+        {
+           res.status(400).json({errorid:0, message: "email non valida" });
 
         }
     }).catch(
@@ -115,7 +120,7 @@ app.get(BASEURI + '/user', (req, res) => {
 
 app.post(BASEURI + '/order', (req, res) => {
     if (!req.body.order) {
-        res.status(400).json({ id: -1, error: err, errorText: "Your login session is expired, please retry to login" });
+        res.status(401).json({ id: -1, error: err, errorText: "Your login session is expired, please retry to login" });
         res.end();
     }
     console.log("ENTRO IN POST CREATE ORDER");

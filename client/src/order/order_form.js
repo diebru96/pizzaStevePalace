@@ -30,14 +30,18 @@ class OrderForm extends React.Component {
 
     constructor(props) {
         super(props);
-        this.state = { id: -1, userId: 1, pizzaList: [], pizzaForms: [], submitted: false, addForm: 0, infos: [], maxS: 1, maxM: 1, maxL: 1, TOTprice: 0, ordered: false, current_s: 1, current_m: 0, current_l: 0, discount: 0, numberOfPizzaError: false, allowTransaction: true, errorMessage: "", openErrorDialogue: false, openLocalErrorDialogue: false, returnErrorMessage: "", toLogin: false };
+        this.state = { id: -1, userId: 1, pizzaList: [], pizzaForms: [], submitted: false, addForm: 0, infos: [], maxS: 1, maxM: 1, maxL: 1, TOTprice: 0, ordered: false, current_s: 1, current_m: 0, current_l: 0, discount: 0, numberOfPizzaError: false, allowTransaction: true, errorMessage: "", openErrorDialogue: false, openLocalErrorDialogue: false, returnErrorMessage: "", toLogin: false, timeOut: false };
     }
     componentDidMount() {
+        var appcontext = this.context;
+        appcontext.changeHeader(false);
         const ingr = this.props.ingredientList.map((i) => { return { value: i, label: i } });
         API.pizzeriaInfos().then((info) => {
             this.setState({ infos: info, maxS: info[0].available_s, maxM: info[0].available_m, maxL: info[0].available_l });
             this.addPizzaForm(ingr);
+
         });
+
     }
 
     addPizzaForm = (options) => {
@@ -218,6 +222,8 @@ class OrderForm extends React.Component {
             API.createOrder(orderJson).then((id) => {
                 if (id) {
                     this.props.triggerPizzaReady();
+                    var appcontext = this.context;
+                    appcontext.changeHeader(false);
                     this.setState({ ordered: true });
                 }
             }).catch((err) => {
@@ -225,8 +231,8 @@ class OrderForm extends React.Component {
                     this.setState({ openErrorDialogue: true, maxS: err.s, maxM: err.m, maxL: err.l, numberOfPizzaError: true, returnErrorMessage: "Sorry not enough available pizzas", });
                 }
                 else
-                    if (err.status === 401) {
-                        this.setState({ openErrorDialogue: true, returnErrorMessage: err.errorText });
+                    if (err.status && err.status === 401) {
+                        this.setState({ openErrorDialogue: true, returnErrorMessage: err.errorText, timeOut: true });
                     }
                     else
                         this.setState({ openErrorDialogue: true, returnErrorMessage: "ERROR UNKNOWN" });
@@ -240,59 +246,64 @@ class OrderForm extends React.Component {
     }
 
     render() {
+        var appcontext = this.context;
         const options = this.props.ingredientList.map((i) => { return { value: i, label: i } });
-        if (this.state.ordered) {
-            return <Redirect to='/' />;
+        if (this.state.toLogin || appcontext.timeOut) {
+            return <Redirect to='/login' />;
         }
         else
-            return (
+            if (this.state.ordered) {
+                return <Redirect to='/' />;
+            }
+            else
+                return (
 
-                <Container fluid>
-                    {this.ErrorDialogue()}
-                    {this.LocalErrorDialogue()}
-                    <h2>Create your order:</h2>
-                    {this.state.numberOfPizzaError &&
-                        <h6 className="error-message">
-                            <tr>The number of pizzas you slected is not available.</tr>
-                            {(this.state.current_s > this.state.maxS) &&
-                                <tr>Available Small Pizzas: {this.state.maxS},        Amount selected: {this.state.current_s}</tr>}
-                            {(this.state.current_m > this.state.maxM) &&
-                                <tr><td>Available Medium Pizzas: {this.state.maxM}</td><p className="error-td"></p><td> Amount selected: {this.state.current_m}</td></tr>}
-                            {(this.state.current_l > this.state.maxL) &&
-                                <tr><td>Available Large Pizzas: {this.state.maxL}</td><p className="error-td"></p><td> Amount selected: {this.state.current_l}</td></tr>}
-                        </h6>
-                    }
+                    <Container fluid>
+                        {this.ErrorDialogue()}
+                        {this.LocalErrorDialogue()}
+                        <h2>Create your order:</h2>
+                        {this.state.numberOfPizzaError &&
+                            <h6 className="error-message">
+                                <tr>The number of pizzas you slected is not available.</tr>
+                                {(this.state.current_s > this.state.maxS) &&
+                                    <tr>Available Small Pizzas: {this.state.maxS},        Amount selected: {this.state.current_s}</tr>}
+                                {(this.state.current_m > this.state.maxM) &&
+                                    <tr><td>Available Medium Pizzas: {this.state.maxM}</td><p className="error-td"></p><td> Amount selected: {this.state.current_m}</td></tr>}
+                                {(this.state.current_l > this.state.maxL) &&
+                                    <tr><td>Available Large Pizzas: {this.state.maxL}</td><p className="error-td"></p><td> Amount selected: {this.state.current_l}</td></tr>}
+                            </h6>
+                        }
 
-                    {this.state.addForm > 0 ?
-                        <Table>
-                            <thead>
-                                <tr>
-                                    <th style={{ width: '15%' }}>N</th>
-                                    <th style={{ width: '20%' }}>Size</th>
-                                    <th style={{ width: '43%' }}>Ingredients</th>
-                                    <th style={{ width: '7%' }}> Sauce </th>
-                                    <th style={{ width: '15%' }}>Actions</th>
+                        {this.state.addForm > 0 ?
+                            <Table>
+                                <thead>
+                                    <tr>
+                                        <th style={{ width: '15%' }}>N</th>
+                                        <th style={{ width: '20%' }}>Size</th>
+                                        <th style={{ width: '43%' }}>Ingredients</th>
+                                        <th style={{ width: '7%' }}> Sauce </th>
+                                        <th style={{ width: '15%' }}>Actions</th>
 
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {this.state.pizzaForms.map((pizza) => { return pizza.value })}
-                            </tbody>
-                        </Table> :
-                        <p></p>
-                    }
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {this.state.pizzaForms.map((pizza) => { return pizza.value })}
+                                </tbody>
+                            </Table> :
+                            <p></p>
+                        }
 
-                    <h5 className="App-price">Total: {this.state.TOTprice}$</h5>
-                    <p className="App-buttoncheck">
-                        <button onClick={() => { this.addPizzaForm(options) }}>+</button>
-                    </p>
-                    <p className="App-buttoncheckout">
-                        <button onClick={this.checkOut}>CHECKOUT</button>
-                    </p>
+                        <h5 className="App-price">Total: {this.state.TOTprice}$</h5>
+                        <p className="App-buttoncheck">
+                            <button onClick={() => { this.addPizzaForm(options) }}>+</button>
+                        </p>
+                        <p className="App-buttoncheckout">
+                            <button onClick={this.checkOut}>CHECKOUT</button>
+                        </p>
 
-                </Container>
+                    </Container>
 
-            );
+                );
     }
 
     ErrorDialogue = () => {
@@ -313,7 +324,9 @@ class OrderForm extends React.Component {
                         </DialogContentText>
                     </DialogContent>
                     <DialogActions>
-                        <Button onClick={() => this.setState({ openErrorDialogue: false })} variant="danger">
+                        <Button onClick={() => {
+                            this.setState({ openErrorDialogue: false, toLogin: this.state.timeOut });
+                        }} variant="danger">
                             OK
                         </Button>
                     </DialogActions>

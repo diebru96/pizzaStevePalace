@@ -14,7 +14,8 @@ class UserProfile extends React.Component {
     }
 
     componentDidMount() {
-        ///SETTARE CONTEXT PER TOGLIERE HEADER
+        var appcontext = this.context;
+        appcontext.changeHeader(false);
     }
 
     getOrders = () => {
@@ -30,7 +31,7 @@ class UserProfile extends React.Component {
                         <h1>USER PROFILE</h1>
                         <div>
                             <td> <img src="./pizza1.jpg" className="user-image"></img> </td>
-                            <td><tr><h4> USERNAME:{context.authUser.username}</h4> </tr><tr> EMAIL:{context.authUser.email}</tr></td>
+                            <td><tr><h4> USERNAME: {context.authUser.username}</h4> </tr><tr> EMAIL: {context.authUser.email}</tr></td>
                         </div>
                         <div>
                             {this.state.showList ?
@@ -62,4 +63,5 @@ class UserProfile extends React.Component {
         );
     }
 }
+UserProfile.contextType = AppContext; // TO ACCESS CONTEXT VALUES WITH THIS
 export default UserProfile;

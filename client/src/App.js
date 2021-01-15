@@ -15,6 +15,7 @@ import UserProfile from './user/user_profile';
 import AvailabilityTable from './availability';
 import SignUpForm from './auth/signup'
 import { AppContext } from './app_contexts';
+import { withRouter } from 'react-router-dom';
 //DIALOGUE
 import Button from '@material-ui/core/Button';
 import Dialog from '@material-ui/core/Dialog';
@@ -27,17 +28,18 @@ import Slide from '@material-ui/core/Slide';
 class App extends React.Component {
   constructor(props) {
     super(props);
-    this.state = { ingredients: ["olives", "ham", "bacon", "mushrooms", "egg", "artichokes", "seafood", "chips", "vegetables"], pizzeriaInfos: [], username: "", userlogged: false, showInfos: false, homeHeader: true, message: "", authUser: { username: "die", email: "fresco", showPopUp: false }, pizzaReady: false, orderOk: false, available_s: 10, available_m: 8, available_l: 6 };
+    this.state = { ingredients: ["olives", "ham", "bacon", "mushrooms", "egg", "artichokes", "seafood", "chips", "vegetables"], pizzeriaInfos: [], username: "", userlogged: false, showInfos: false, homeHeader: true, message: "", authUser: {}, pizzaReady: false, orderOk: false, available_s: 10, available_m: 8, available_l: 6, timeOut: false };
   }
 
   componentDidMount() {
     //CHECK AUTH
     API.isAuthenticated().then(
       (user) => {
-        this.setState({ authUser: user, userlogged: true, username: user.username });
+        this.setState({ authUser: user, userlogged: true, username: user.username, timeOut: false });
       }
     ).catch((err) => {
-      this.setState({ authUser: {}, authErr: err.errorObj });
+      //Timeout è per switchare pagina da order e user
+      this.setState({ authUser: {}, authErr: err, userLogged: false, timeOut: true, });
       // this.props.history.push("/login");
     });
   }
@@ -51,12 +53,11 @@ class App extends React.Component {
   login = (email, password) => {
     API.userLogin(email, password).then(
       (user) => {
-        this.setState({ username: user.username, userlogged: true });
+        this.setState({ authUser: user, username: user.username, userlogged: true, timeOut: false });
       }
     ).catch(
-      (errorObj) => {
-        const err0 = errorObj.errors[0];
-        this.setState({ authErr: err0 });
+      (err) => {
+        this.handleErrors(err);
       }
     );
   }
@@ -74,15 +75,15 @@ class App extends React.Component {
   ///PER ERRORI LOGIN
   handleErrors(err) {
     if (err) {
-      if (err.status && err.status === 401) {
-        this.setState({ authErr: err.errorObj });
-        this.props.history.push("/login");
-      }
+      //     if (err.id == 0 || err.id == 1) {
+      this.setState({ authErr: err.message });
+      this.props.history.push("/login");
+      // }
     }
   }
 
-  changeAvailability = (s, m, l) => {
-    this.setState({ available_s: s, available_m: m, available_l: l })
+  changeHeader = (value) => {
+    this.setState({ homeHeader: value })
   }
 
 
@@ -90,10 +91,10 @@ class App extends React.Component {
     const value = {
       authUser: this.state.authUser,
       authErr: this.state.authErr,
-      available_s: this.state.available_s,
-      available_m: this.state.available_m,
-      available_l: this.state.available_l,
-      changeAvailability: this.changeAvailability
+      homeHeader: this.state.homeHeader,
+      userLogged: this.state.userlogged,
+      timeOut: this.state.timeOut,
+      changeHeader: this.changeHeader
     }
     return (
       <AppContext.Provider value={value}>
@@ -136,7 +137,7 @@ class App extends React.Component {
 
           </header>
           {this.OrderOkDialogue("Your order has been accepted", "You will be notified when it is ready.")}
-          {this.PizzaDialogue("Your pizzas are ready", "Hi" + this.state.username, "You can collect your pizzas at Pizza Steve Palace.")}
+          {this.PizzaDialogue("Your pizzas are ready", "Hi " + this.state.authUser.email + ".", "You can collect your pizzas at Pizza Steve Palace.")}
           <Switch>
             <Route exact path="/">
               <div className="App">
