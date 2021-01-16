@@ -78,7 +78,6 @@ class PizzaForm extends React.Component {
                         val2.push({
                             value: "seafood",
                             label: "seafood",
-                            isFixed: true
                         });
                     }
                 }

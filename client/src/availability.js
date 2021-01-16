@@ -7,7 +7,7 @@ function AvailabilityTable(props) {
         const info = props.pizzeriaInfos[0];
         return (
 
-            <Table bordered className="App-table">
+            <Table striped bordered variant="dark" className="App-table">
                 <thead>
                     <tr>
                         <th style={{ width: '20%' }}>Size </th>

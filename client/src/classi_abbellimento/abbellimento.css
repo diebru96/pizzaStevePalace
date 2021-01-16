@@ -1,7 +1,7 @@
 .image {
     display: block;
     margin: 0 auto;
-    height: 40vmin;
+    height: 400px;
   }
   .image[wobble='1'] {
     animation: wobble 1s 1;

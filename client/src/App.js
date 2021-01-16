@@ -1,6 +1,6 @@
 import React from 'react';
 import Image from './classi_abbellimento/image_wobble';
-import Table from 'react-bootstrap/Table';
+import Navbar from 'react-bootstrap/Navbar';
 import './App.css';
 import API from './api/API';
 import {
@@ -26,7 +26,23 @@ import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import Slide from '@material-ui/core/Slide';
 
+window.onscroll = function () { scrollFunction() };
 
+function scrollFunction() {
+  if (document.body.scrollTop > 80 || document.documentElement.scrollTop > 80) {
+    document.getElementById("navbar").style.padding = "30px 10px";
+    document.getElementById("navbar").style.backgroundColor = ` #1a1814`;
+    document.getElementById("logo").style.height = "60px";
+    document.getElementById("logo").style.marginLeft = "150px";
+
+  } else {
+    document.getElementById("navbar").style.padding = "80px 10px";
+    document.getElementById("navbar").style.backgroundColor = `#1a181488`;
+    document.getElementById("logo").style.height = "160px";
+    document.getElementById("logo").style.marginLeft = "90px";
+
+  }
+}
 class App extends React.Component {
   constructor(props) {
     super(props);
@@ -109,14 +125,14 @@ class App extends React.Component {
 
         <header className={this.state.homeHeader ? "App-header" : "App-header2"}>
 
-          <nav class="nav-menu">
-
+          <nav class="nav-menu" id="navbar">
+            <img id="logo" src="./pizzalogo.png" className="App-logo" alt="logo" />
             <h3 className="App-titleBar"> <Link to="/" onClick={() => this.setState({ homeHeader: true })}><h3 className="App-titleBar"> Pizza Steve Palace</h3></Link></h3>
             <ul>
               <li class="active"><a href="/" onClick={() => this.setState({ homeHeader: true })}>Home</a></li>
               {this.state.homeHeader && <>
                 <li><a href="#menu">Ingredients</a></li>
-                <li><a href="#availability">Availability</a></li>
+                <li><a href="#availability" onClick={() => { this.getpizzeriaInfo() }}>Availability</a></li>
               </>
               }
               <li class="book-a-table"><Link to={this.state.userlogged ? "/order" : "/login"} onClick={() => this.setState({ homeHeader: false, message: "You need to login to make your order" })}>Create an order</Link></li>
@@ -134,10 +150,10 @@ class App extends React.Component {
             </ul>
 
           </nav>
+
           {this.state.homeHeader &&
             <>
-              <h1>Pizza Steve Palace</h1>
-              <img src="./pizzalogo.png" className="App-logo" alt="logo" />
+              <h1 className="App-h1">Pizza Steve Palace</h1>
             </>
 
           }
@@ -149,40 +165,56 @@ class App extends React.Component {
           <Route exact path="/">
             <div className="App">
 
-              <body>
-                <section id="menu">
-                  <h2 className="App-title">List of Ingredients</h2>
+              <body className="App-body">
 
-                  <table className="App-table">
-                    <thead>
+                <section id="menu" className="App-menu">
+                  <div>
+                    <p class="center">
+                      <p className="App-spacer"></p>
+                      <h2 className="App-title">List of Ingredients</h2>
+                      <p className="App-spacer2"> </p>
+                      <table className="App-table">
+                        <thead>
 
-                      <tr>
-                        <th style={{ width: '50%' }}></th>
-                        <th style={{ width: '50%' }}></th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      <td><Image /></td>
-                      <td>
-                        {this.state.ingredients.map((i) => { return <tr>{i}</tr>; })}
-                      </td>
+                          <tr>
+                            <th style={{ width: '50%' }}></th>
+                            <th style={{ width: '50%' }}></th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <td><Image /></td>
+                          <td>
+                            <h5> {this.state.ingredients.map((i) => { return <tr>{i}</tr>; })}</h5>
+                          </td>
 
-                    </tbody>
-                  </table>
+                        </tbody>
+                      </table>
+                    </p>
+                  </div>
+                  <p className="App-changesection1"></p>
+
                 </section>
-                <section id="availability">
-                  <p className="App-buttoncheck">
-                    <button onClick={() => { this.getpizzeriaInfo(); document.getElementById('availability').scrollIntoView(); }}>Check availability</button>
-                  </p>
-                  {this.state.showInfos ?
-                    <>
-                      <AvailabilityTable pizzeriaInfos={this.state.pizzeriaInfos}></AvailabilityTable>
-                      <button className="App-buttonhide" onClick={() => { this.setState({ showInfos: false }) }}>HIDE</button>
-                    </> :
-                    <p className="App-placeholder"></p>
-                  }
-                  <p>
-                  </p>
+                <section id="availability" className="App-availability">
+                  <p className="App-changesection2"></p>
+
+                  <div>
+                    <p className="App-spacer"></p>
+                    <h2 className="App-av-desc">We produce a limited amount of pizzas everyday to guarantee the best product possible to our clients.</h2>
+                    <p className="App-spacer3"></p>
+
+                    {this.state.showInfos &&
+                      <>
+                        <AvailabilityTable pizzeriaInfos={this.state.pizzeriaInfos}></AvailabilityTable>
+                        <button className="App-buttonhide" onClick={() => { this.setState({ showInfos: false }) }}>HIDE</button>
+                      </>
+                    }
+                    <p className="App-spacer4"></p>
+                    <p className="App-buttoncheck">
+                      <button onClick={() => { this.getpizzeriaInfo();/* document.getElementById('availability').scrollIntoView();*/ }}>Check availability</button>
+                    </p>
+                    <p>
+                    </p>
+                  </div>
                 </section>
               </body>
             </div>
