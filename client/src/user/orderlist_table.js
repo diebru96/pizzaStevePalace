@@ -10,7 +10,7 @@ function OrderListTable(props) {
         const orderList = props.orderList;
         return (
 
-            <Table>
+            <Table className="pastorders-table">
                 <thead>
                     <tr>
                         <th style={{ width: '20%' }}>Order Nr.</th>
@@ -21,7 +21,7 @@ function OrderListTable(props) {
                 <tbody className="orderlist">
                     {
                         orderList.map((order) => {
-                            return (<OrderRow order={order} />)
+                            return (<OrderRow order={order} context={props.context} />)
                         })
                     }
                 </tbody>

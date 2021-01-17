@@ -1,5 +1,6 @@
 import React from 'react';
 import Image from './classi_abbellimento/image_wobble';
+import Button from 'react-bootstrap/Button';
 import Navbar from 'react-bootstrap/Navbar';
 import './App.css';
 import API from './api/API';
@@ -18,7 +19,6 @@ import AvailabilityTable from './availability';
 import SignUpForm from './auth/signup'
 import { AppContext } from './app_contexts';
 //DIALOGUE
-import Button from '@material-ui/core/Button';
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
@@ -105,7 +105,7 @@ class App extends React.Component {
   }
 
   sessionTimedOut = () => {
-    this.setState({ userlogged: false, username: "", authUser: {} });
+    this.setState({ userlogged: false, username: "", authUser: {}, timeOut: true });
   }
 
 
@@ -184,7 +184,7 @@ class App extends React.Component {
                         <tbody>
                           <td><Image /></td>
                           <td>
-                            <h5> {this.state.ingredients.map((i) => { return <tr>{i}</tr>; })}</h5>
+                            <h5 className="App-ingredients"> {this.state.ingredients.map((i) => { if (i === "seafood") return <tr>{i} (+10% price)</tr>; else return <tr>{i}</tr>; })}</h5>
                           </td>
 
                         </tbody>
@@ -258,7 +258,7 @@ class App extends React.Component {
             </DialogContentText>
           </DialogContent>
           <DialogActions>
-            <Button onClick={() => this.setState({ pizzaReady: false })} color="primary">
+            <Button variant="success" onClick={() => this.setState({ pizzaReady: false })}>
               OK
             </Button>
           </DialogActions>
@@ -285,7 +285,7 @@ class App extends React.Component {
             </DialogContentText>
           </DialogContent>
           <DialogActions>
-            <Button onClick={() => this.setState({ orderOk: false })} color="primary">
+            <Button variant="success" onClick={() => this.setState({ orderOk: false })} >
               OK
                     </Button>
           </DialogActions>

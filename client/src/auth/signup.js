@@ -67,8 +67,8 @@ class SignUpForm extends React.Component {
                             <Form.Control type="password" name="password" placeholder="Password" value={this.state.password} onChange={(ev) => this.onChangePassword(ev)} required />
                         </Form.Group>
 
-                        <Button variant="primary" type="submit">Register</Button>
-                        <p> <Link to="/">Back</Link></p>
+                        <Button variant="dark" type="submit">Register</Button>
+                        <p> Already registered?  <Link to="/login"> Login</Link> </p>
 
                     </Form>
 

@@ -37,6 +37,8 @@ class PizzaForm extends React.Component {
 
     }
 
+
+
     onChange = (option, { action }) => {
         let ingredients = "";
         let ingredients2 = "";
@@ -228,11 +230,13 @@ class PizzaForm extends React.Component {
             </td>
                 <td>
                     <Select
+                        styles={style}
                         value={this.state.pizzaType[0]}
                         options={optionSize}
                         onChange={this.onChangeType}
+
                     />
-                    {this.state.type === 2 ?
+                    {this.state.type === 2 &&
 
                         <FormControlLabel
                             control={
@@ -245,9 +249,6 @@ class PizzaForm extends React.Component {
                             }
                             label="divided"
                         />
-
-                        :
-                        <></>
                     }
 
                 </td>
@@ -277,6 +278,7 @@ class PizzaForm extends React.Component {
 
     getPizzaSelect = (animatedComponents, options) => {
         return (<td><Select
+            styles={style}
             closeMenuOnSelect={false}
             components={animatedComponents}
             value={this.state.val}
@@ -289,6 +291,8 @@ class PizzaForm extends React.Component {
 
     getLargePizzaSelectDivided = (animatedComponents, options, options2) => {
         return (<td className="double-td"> <td><Select
+            styles={style}
+            className="select"
             closeMenuOnSelect={false}
             components={animatedComponents}
             value={this.state.val}
@@ -298,6 +302,8 @@ class PizzaForm extends React.Component {
             options={options} /> </td>
 
             <td className="double-td"><Select
+                className="select"
+                styles={style}
                 closeMenuOnSelect={false}
                 components={animatedComponents}
                 value={this.state.val2}
@@ -309,4 +315,21 @@ class PizzaForm extends React.Component {
         );
     }
 }
+
+const style = {
+    option: (provided, state) => ({
+        ...provided,
+        color: state.isSelected ? 'white' : 'black',
+        backgroundColor: state.isSelected ? '#cda45e' : state.isFocused ? '#cda45e4f' : 'transparent',
+    }),
+    control: (base, state) => ({
+        ...base,
+        // borderWidth: state.isFocused ? "5px" : "1px",
+        borderColor: state.isFocused ? "#cda45e" : " rgba(158, 158, 158, 0.801)",
+        boxShadow: state.isFocused && "1px 1px 2px 1px  #cda45ebb",
+        "&:hover": {
+            borderColor: state.isFocused && "#cda45e"
+        }
+    })
+};
 export default PizzaForm;

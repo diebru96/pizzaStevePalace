@@ -7,6 +7,7 @@ import Table from 'react-bootstrap/Table'
 
 import Button from 'react-bootstrap/Button';
 import Alert from 'react-bootstrap/Alert';
+import Toast from 'react-bootstrap/Toast';
 import { Redirect, Link } from 'react-router-dom';
 import API from './../api/API';
 import Pizza from './pizza';
@@ -28,7 +29,7 @@ class OrderForm extends React.Component {
 
     constructor(props) {
         super(props);
-        this.state = { id: -1, userId: 1, pizzaList: [], pizzaForms: [], submitted: false, addForm: 0, infos: [], maxS: 1, maxM: 1, maxL: 1, TOTprice: 0, ordered: false, current_s: 1, current_m: 0, current_l: 0, discount: 0, numberOfPizzaError: false, allowTransaction: true, errorMessage: "", openErrorDialogue: false, openLocalErrorDialogue: false, returnErrorMessage: "", toLogin: false, timeOut: false };
+        this.state = { id: -1, userId: 1, pizzaList: [], pizzaForms: [], submitted: false, addForm: 0, infos: [], maxS: 1, maxM: 1, maxL: 1, TOTprice: 0, ordered: false, current_s: 1, current_m: 0, current_l: 0, discount: 0, numberOfPizzaError: false, allowTransaction: true, errorMessage: "", openErrorDialogue: false, openLocalErrorDialogue: false, returnErrorMessage: "", toLogin: false, timeOut: false, show: false };
     }
     componentDidMount() {
         var appcontext = this.context;
@@ -260,7 +261,8 @@ class OrderForm extends React.Component {
                     <Container fluid>
                         {this.ErrorDialogue()}
                         {this.LocalErrorDialogue()}
-                        <h2>Create your order:</h2>
+                        <h2 className="text-title">Create your order:</h2> <Button className="infobutton" variant="dark" onClick={() => { this.toggleShow(true) }}>?</Button>
+                        {this.getToast()}
                         {this.state.numberOfPizzaError &&
                             <h6 className="error-message">
                                 <tr>The number of pizzas you slected is not available.</tr>
@@ -293,7 +295,7 @@ class OrderForm extends React.Component {
                         }
 
                         <h5 className="App-price">Total: {this.state.TOTprice}$</h5>
-                        <p className="App-buttoncheck">
+                        <p className="App-buttonAdd">
                             <button onClick={() => { this.addPizzaForm(options) }}>+</button>
                         </p>
                         <p className="App-buttoncheckout">
@@ -359,6 +361,31 @@ class OrderForm extends React.Component {
                 </Dialog>
             </div>
         );
+    }
+
+    toggleShow = (value) => {
+        this.setState({ show: value });
+    }
+    getToast = () => {
+        return <Toast
+            style={{
+                position: 'absolute',
+                top: 115,
+                right: 280,
+                zIndex: 99
+            }}
+            show={this.state.show}
+            onClose={() => { this.toggleShow(false) }}
+            delay={7000} autohide
+        >
+
+            <Toast.Header>
+                <strong className="mr-auto">Info about your order</strong>
+            </Toast.Header>
+            <Toast.Body className="Toast-body"><tr>You can select a maximum of 2 ingredients for S pizzas, of 3 for M , of 6 for L.</tr>
+                <tr>If you select a splitted pizza you have 3 ingredients for each half, but if you want seafood you need to select it for both halves.</tr>
+            </Toast.Body>
+        </Toast>
     }
 }
 

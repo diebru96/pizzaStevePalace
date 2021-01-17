@@ -51,14 +51,14 @@ class LoginForm extends React.Component {
                                 <td><p><h6 className="loginmessage">{this.props.message}</h6></p></td>
 
                                 <div className="content">
-                                    Log-in to your account {this.state.username}
+                                    Log-in to your account
                                 </div>
                             </h2>
                             <h6 className="error-message">{context.authErr}</h6>
                             <Form method="POST" onSubmit={(event) => this.handleSubmit(event, this.props.login)}>
-                                <Form.Group controlId="username">
+                                <Form.Group controlId="username" >
                                     <Form.Label>E-mail</Form.Label>
-                                    <Form.Control type="email" name="email" placeholder="E-mail" value={this.state.email} onChange={(ev) => this.onChangeUsername(ev)} required autoFocus />
+                                    <Form.Control class="form-control" type="email" name="email" placeholder="E-mail" value={this.state.email} onChange={(ev) => this.onChangeUsername(ev)} required autoFocus />
                                 </Form.Group>
 
                                 <Form.Group controlId="password">
@@ -66,7 +66,7 @@ class LoginForm extends React.Component {
                                     <Form.Control type="password" name="password" placeholder="Password" value={this.state.password} onChange={(ev) => this.onChangePassword(ev)} required />
                                 </Form.Group>
 
-                                <Button variant="primary" type="submit">Login</Button>
+                                <Button variant="dark" type="submit">Login</Button>
                                 <p> </p>
                                 <p> </p>
                                 <p> Haven't got your account yet?  <Link to="/signup"> Register</Link> </p>
@@ -84,6 +84,17 @@ class LoginForm extends React.Component {
 
 
 }
+const style = {
+    control: (base, state) => ({
+        ...base,
+        // borderWidth: state.isFocused ? "5px" : "1px",
+        borderColor: state.isFocused ? "#cda45e" : " rgba(158, 158, 158, 0.801)",
+        boxShadow: state.isFocused && "1px 1px 2px 1px  #cda45ebb",
+        "&:hover": {
+            borderColor: state.isFocused && "#cda45e"
+        }
+    })
+};
 
 
 export default LoginForm;

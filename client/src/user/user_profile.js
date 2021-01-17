@@ -30,6 +30,8 @@ class UserProfile extends React.Component {
         });
     }
     render() {
+        if (this.context.timeOut)
+            return <Redirect to='/login' />;
         if (this.state.redirect) {
             return <Redirect to='/' />;
         }
@@ -37,30 +39,36 @@ class UserProfile extends React.Component {
             return (
                 <AppContext.Consumer>
                     {(context) => (
+
                         <Container fluid>
-                            <h1>USER PROFILE</h1>
-                            <div>
-                                <td> <img src="./pizza1.jpg" className="user-image"></img> </td>
+                            <div className="user-background"></div>
+                            <p className="user-spacer"></p>
+                            <h1 className="user-title">USER PROFILE</h1>
+                            <p></p>
+                            <div className="user-div">
+                                <td> <img src="./pizza5.jpg" className="user-image"></img> </td>
+                                <td className="h-space"></td>
                                 <td><tr><h4> USERNAME: {context.authUser.username}</h4> </tr><tr> EMAIL: {context.authUser.email}</tr></td>
                             </div>
+                            <p className="user-spacer"></p>
                             <div>
                                 {this.state.showList ?
-                                    <p className="App-buttoncheck">
+                                    <p className="App-buttonlistorders">
                                         <button onClick={() => { this.setState({ showList: false }) }}>Hide list</button>
                                     </p> :
                                     this.state.firstShow ?
-                                        <p className="App-buttoncheck">
-                                            <button onClick={() => { this.getOrders(); }}>Check order list</button>
+                                        <p className="App-buttonlistorders">
+                                            <button onClick={() => { this.getOrders(); }}>Check past order list</button>
                                         </p> :
 
-                                        <p className="App-buttoncheck">
+                                        <p className="App-buttonlistorders">
                                             <button onClick={() => { this.setState({ showList: true }) }}>Show list</button>
                                         </p>
                                 }
                                 <p>
                                     {this.state.showList ?
                                         <>
-                                            <OrderListTable orderList={this.state.orderList}></OrderListTable>
+                                            <OrderListTable orderList={this.state.orderList} context={this.context}></OrderListTable>
                                             <button className="App-buttonhide" onClick={() => { this.setState({ showList: false }) }}>HIDE</button>
                                         </> :
                                         <p className="App-placeholder"></p>

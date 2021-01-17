@@ -12,19 +12,13 @@ class OrderRow extends React.Component {
 
     constructor(props) {
         super(props);
-        this.state = ({ showPizza: false, pizzalist: [], showArrow: false, arrowdown: true });
+        this.state = ({ showPizza: false, pizzalist: [], showArrow: false, arrowdown: true, firstTime: true });
     }
 
-    componentDidMount() {
-        API.getPizzasInOrder(this.props.order.id_order).then((pizzas) => {
-            var pizzalist = (<ul>{this.ListPizzas(pizzas)}</ul>);
-            this.setState({ pizzalist: pizzalist, showPizza: false });
-        })
-
-    }
 
     ListPizzas = (pizzas) => {
-
+        if (pizzas === "")
+            return <li>error getting pizzas</li>
         return pizzas.sort((a, b) => (a.type - b.type)).map((pizza) => {
             var type = "S";
             switch (pizza.type) {
@@ -56,12 +50,35 @@ class OrderRow extends React.Component {
 
     }
 
+    getPizzaList = () => {
+        if (!this.state.showPizza) {
+            if (this.state.firstTime) {
+                API.getPizzasInOrder(this.props.order.id_order).then((pizzas) => {
+                    var pizzalist = (<ul>{this.ListPizzas(pizzas)}</ul>);
+                    this.setState({ pizzalist: pizzalist, showPizza: false, firstTime: false, showPizza: true });
+                }).catch((err) => {
+                    if (err.id === -1) {
+                        this.props.context.sessionTimedOut();
+                    }
+                    this.setState({ pizzalist: "", firstTime: true });
+                });
+            }
+            else
+                this.setState({ showPizza: true });
+
+        }
+        else {
+            this.setState({ showPizza: false });
+        }
+
+    }
+
     render() {
         const order = this.props.order;
 
         return (
             <>
-                <tr onClick={() => { this.setState({ showPizza: !this.state.showPizza, arrowdown: !this.state.arrowdown }) }} onMouseOver={() => this.setState({ showArrow: true })} onMouseOut={() => this.setState({ showArrow: false })}>
+                <tr onClick={() => { this.getPizzaList(); this.setState({ arrowdown: !this.state.arrowdown }) }} onMouseOver={() => this.setState({ showArrow: true })} onMouseOut={() => this.setState({ showArrow: false })}>
                     <td>{order.id_order}</td>
                     {this.state.showArrow ?
                         <td >x {order.tot_pizza} pizzas <span className={this.state.arrowdown ? "arrow-down" : "arrow-up"}></span></td>
