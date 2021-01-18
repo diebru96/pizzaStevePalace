@@ -25,7 +25,7 @@ class PizzaForm extends React.Component {
 
     constructor(props) {
         super(props);
-        this.state = { number: 1, ingredients: "", ingredients2: "", special: false, pizzaType: [{ value: 0, label: "S" }], type: 0, submitted: false, val: [], val2: [], maxS: 1, maxM: 1, maxL: 1, checkedDivided: false, checkedSauce: true };
+        this.state = { options: "", number: 1, ingredients: "", ingredients2: "", special: false, pizzaType: [{ value: 0, label: "S" }], type: 0, submitted: false, val: [], val2: [], maxS: 1, maxM: 1, maxL: 1, checkedDivided: false, checkedSauce: true };
         this.onChange = this.onChange.bind(this);
         this.onChange2 = this.onChange2.bind(this);
         this.onChangeType = this.onChangeType.bind(this);
@@ -33,7 +33,7 @@ class PizzaForm extends React.Component {
     }
 
     componentDidMount() {
-        this.setState({ maxS: this.props.maxS, maxM: this.props.maxM, maxL: this.props.maxL })
+        this.setState({ options: this.props.options, maxS: this.props.maxS, maxM: this.props.maxM, maxL: this.props.maxL })
 
     }
 
@@ -42,82 +42,57 @@ class PizzaForm extends React.Component {
     onChange = (option, { action }) => {
         let ingredients = "";
         let ingredients2 = "";
+
+        if (action === "clear") {
+            if (option === null) {
+                option = [];
+            }
+        }
         if (action === "remove-value") {
             if (option === null) {
                 option = [];
             }
-            if ((this.state.type === 0 && option.length <= 2) || (this.state.type === 1 && option.length <= 3) || (this.state.type === 2 && this.state.checkedDivided && option.length <= 3) || (this.state.type === 2 && !this.state.checkedDivided && option.length <= 6)) {
-                let special = false;
-                const ingr = option.map((i) => { return (i.label) });
-
-                /// PROBABILMENTE DA TOGLIERE QUESTO SETTAGGIO A VUOTO DI VAL2 O TROVARE MODO PER FORZARE SEAFOOD
-                let val2 = this.state.val2;
-                for (var i of ingr) {
-                    ingredients = ingredients + i + " ";
-                    if (i === "seafood") {
-                        special = true;
-                        val2.push({
-                            value: "seafood",
-                            label: "seafood"
-                        });
-                    }
-                }
-
-                this.setState({ val: option, ingredients: ingredients, special: special, val2: val2 });
-                this.props.updatePizza(this.props.id, this.state.number, this.state.type, ingredients, special, this.state.checkedSauce, this.state.ingredients2);
-            }
         }
-        else
-            if ((this.state.type == 0 && option.length <= 2) || (this.state.type === 1 && option.length <= 3) || (this.state.type === 2 && this.state.checkedDivided && option.length <= 3) || (this.state.type === 2 && !this.state.checkedDivided && option.length <= 6)) {
-                let special = false;
-                const ingr = option.map((i) => { return (i.label) });
-                /// PROBABILMENTE DA TOGLIERE QUESTO SETTAGGIO A VUOTO DI VAL2 O TROVARE MODO PER FORZARE SEAFOOD
-                let val2 = this.state.val2;
-                for (var i of ingr) {
-                    ingredients = ingredients + i + " ";
-                    if (i === "seafood") {
-                        special = true;
-                        val2.push({
-                            value: "seafood",
-                            label: "seafood",
-                        });
-                    }
-                }
-                /// SE LA PIZZA DIVISA IN 2 faccio update anche con ingredienti2
-                if (this.state.type === 2 && this.state.checkedDivided) {
-                    ingredients2 = this.state.ingredients2;
-                }
-
-                this.setState({ val: option, ingredients: ingredients, ingredients2: ingredients2, special: special, val2: val2 });
-                this.props.updatePizza(this.props.id, this.state.number, this.state.type, ingredients, special, this.state.checkedSauce, ingredients2);
+        if ((this.state.type == 0 && option.length <= 2) || (this.state.type === 1 && option.length <= 3) || (this.state.type === 2 && this.state.checkedDivided && option.length <= 3) || (this.state.type === 2 && !this.state.checkedDivided && option.length <= 6)) {
+            let special = false;
+            const ingr = option.map((i) => { return (i.label) });
+            /// PROBABILMENTE DA TOGLIERE QUESTO SETTAGGIO A VUOTO DI VAL2 O TROVARE MODO PER FORZARE SEAFOOD
+            let val2 = this.state.val2;
+            for (var i of ingr) {
+                ingredients = ingredients + i + " ";
             }
+            /// SE LA PIZZA DIVISA IN 2 faccio update anche con ingredienti2
+            if (this.state.type === 2 && this.state.checkedDivided) {
+                ingredients2 = this.state.ingredients2;
+            }
+
+            this.setState({ val: option, ingredients: ingredients, ingredients2: ingredients2, special: special, val2: val2 });
+            this.props.updatePizza(this.props.id, this.state.number, this.state.type, ingredients, special, this.state.checkedSauce, ingredients2);
+        }
 
     };
 
     onChange2 = (option, { action }) => {
         let ingredients2 = "";
+
+        if (action === "clear") {
+            if (option === null) {
+                option = [];
+            }
+        }
         if (action === "remove-value") {
             if (option === null) {
                 option = [];
             }
-            if (option.length <= 3) {
-                const ingr2 = option.map((i) => { return (i.label) });
-                for (var i of ingr2) {
-                    ingredients2 = ingredients2 + i + " ";
-                }
-                this.setState({ val2: option, ingredients2: ingredients2 });
-                this.props.updatePizza(this.props.id, this.state.number, this.state.type, this.state.ingredients, this.state.special, this.state.checkedSauce, ingredients2);
-            }
         }
-        else
-            if (option.length <= 3) {
-                const ingr2 = option.map((i) => { return (i.label) });
-                for (var i of ingr2) {
-                    ingredients2 = ingredients2 + i + " ";
-                }
-                this.setState({ val2: option, ingredients2: ingredients2 });
-                this.props.updatePizza(this.props.id, this.state.number, this.state.type, this.state.ingredients, this.state.special, this.state.checkedSauce, ingredients2);
+        if (option.length <= 3) {
+            const ingr2 = option.map((i) => { return (i.label) });
+            for (var i of ingr2) {
+                ingredients2 = ingredients2 + i + " ";
             }
+            this.setState({ val2: option, ingredients2: ingredients2 });
+            this.props.updatePizza(this.props.id, this.state.number, this.state.type, this.state.ingredients, this.state.special, this.state.checkedSauce, ingredients2);
+        }
     };
 
 
@@ -157,10 +132,19 @@ class PizzaForm extends React.Component {
                 ingr2 = "";
                 special = false;
             }
+            var tempOptions;
+            if (type === 2) {
+                tempOptions = this.state.options.map((o) => { if (o.label !== "seafood") return o; else return { value: "seafood", label: "seafood", isDisabled: false } })
+            }
+            else {
+                tempOptions = this.state.options.map((o) => { if (o.label !== "seafood") return o; else return { value: "seafood", label: "seafood", isDisabled: true } })
+
+            }
+
         }
         else
             type = 0;
-        this.setState({ pizzaType: option, action: action, type: type, number: number, val: val, val2: val2, ingredients: ingr, special: special, ingredients2: ingr2 });
+        this.setState({ options: tempOptions, pizzaType: option, action: action, type: type, number: number, val: val, val2: val2, ingredients: ingr, special: special, ingredients2: ingr2 });
         this.props.updatePizza(this.props.id, number, type, ingr, special, this.state.checkedSauce, ingr2);
     };
 
@@ -213,9 +197,6 @@ class PizzaForm extends React.Component {
 
     render() {
         const animatedComponents = makeAnimated();
-        const options = this.props.options;
-        //const options2 = options.filter((item) => item.label !== "seafood");
-        const options2 = options;
         const id = this.props.id;
         const optionSize = [{ value: 0, label: "S" }, { value: 1, label: "M" }, { value: 2, label: "L" }];
         return (
@@ -253,9 +234,9 @@ class PizzaForm extends React.Component {
 
                 </td>
                 {(this.state.type == 2 && this.state.checkedDivided) ?
-                    this.getLargePizzaSelectDivided(animatedComponents, options, options2)
+                    this.getLargePizzaSelectDivided(animatedComponents)
                     :
-                    this.getPizzaSelect(animatedComponents, options)
+                    this.getPizzaSelect(animatedComponents)
                 }
                 <td>
                     <FormControlLabel
@@ -276,7 +257,8 @@ class PizzaForm extends React.Component {
         );
     }
 
-    getPizzaSelect = (animatedComponents, options) => {
+    getPizzaSelect = (animatedComponents) => {
+
         return (<td><Select
             styles={style}
             closeMenuOnSelect={false}
@@ -284,12 +266,14 @@ class PizzaForm extends React.Component {
             value={this.state.val}
             onChange={this.onChange}
             isMulti
+            className="basic-multi-select"
+            classNamePrefix="select"
             // isClearable={this.state.value.some(v => !v.isFixed)}
-            options={options} /></td>
+            options={this.state.options} /></td>
         );
     }
 
-    getLargePizzaSelectDivided = (animatedComponents, options, options2) => {
+    getLargePizzaSelectDivided = (animatedComponents) => {
         return (<td className="double-td"> <td><Select
             styles={style}
             className="select"
@@ -299,7 +283,7 @@ class PizzaForm extends React.Component {
             onChange={this.onChange}
             isMulti
             // isClearable={this.state.value.some(v => !v.isFixed)}
-            options={options} /> </td>
+            options={this.state.options} /> </td>
 
             <td className="double-td"><Select
                 className="select"
@@ -310,7 +294,7 @@ class PizzaForm extends React.Component {
                 onChange={this.onChange2}
                 isMulti
                 //isClearable={this.state.val2.some(v => !v.isFixed)}
-                options={options2} /> </td>
+                options={this.state.options} /> </td>
         </td>
         );
     }
@@ -319,8 +303,9 @@ class PizzaForm extends React.Component {
 const style = {
     option: (provided, state) => ({
         ...provided,
-        color: state.isSelected ? 'white' : 'black',
-        backgroundColor: state.isSelected ? '#cda45e' : state.isFocused ? '#cda45e4f' : 'transparent',
+        color: state.isDisabled ? 'grey' : state.isSelected ? 'white' : 'black',
+        backgroundColor: state.isDisabled ? 'rgba(194, 187, 179, 0.35)' : state.isSelected ? '#cda45e' : state.isFocused ? '#cda45e4f' : 'transparent',
+
     }),
     control: (base, state) => ({
         ...base,

@@ -3,7 +3,7 @@
 }
 
 .double-td td{
-    width:50%;
+    width:40vh;
 }
 
 .App-price{
@@ -112,7 +112,6 @@
     z-index: 1;
     border-color: rgba(158, 158, 158, 0.801);
 }
-
 
 
 

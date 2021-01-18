@@ -29,26 +29,25 @@ class OrderForm extends React.Component {
 
     constructor(props) {
         super(props);
-        this.state = { id: -1, userId: 1, pizzaList: [], pizzaForms: [], submitted: false, addForm: 0, infos: [], maxS: 1, maxM: 1, maxL: 1, TOTprice: 0, ordered: false, current_s: 1, current_m: 0, current_l: 0, discount: 0, numberOfPizzaError: false, allowTransaction: true, errorMessage: "", openErrorDialogue: false, openLocalErrorDialogue: false, returnErrorMessage: "", toLogin: false, timeOut: false, show: false };
+        this.state = { options: null, id: -1, userId: 1, pizzaList: [], pizzaForms: [], submitted: false, addForm: 0, infos: [], maxS: 1, maxM: 1, maxL: 1, TOTprice: 0, ordered: false, current_s: 1, current_m: 0, current_l: 0, discount: 0, numberOfPizzaError: false, allowTransaction: true, errorMessage: "", openErrorDialogue: false, openLocalErrorDialogue: false, returnErrorMessage: "", toLogin: false, timeOut: false, show: false };
     }
     componentDidMount() {
         var appcontext = this.context;
         appcontext.changeHeader(false);
-        const ingr = this.props.ingredientList.map((i) => { return { value: i, label: i } });
+        const ingr = this.props.ingredientList.map((i) => { if (i !== "seafood") { return { value: i, label: i }; } else { return { value: i, label: i, isDisabled: true }; } });
         API.pizzeriaInfos().then((info) => {
-            this.setState({ infos: info, maxS: info[0].available_s, maxM: info[0].available_m, maxL: info[0].available_l });
+            this.setState({ options: ingr, infos: info, maxS: info[0].available_s, maxM: info[0].available_m, maxL: info[0].available_l });
             this.addPizzaForm(ingr);
-
         });
 
     }
 
-    addPizzaForm = (options) => {
+    addPizzaForm = () => {
         let pizzaForms = this.state.pizzaForms;
 
         pizzaForms.push({
             id: this.state.addForm,
-            value: <PizzaForm options={options}
+            value: <PizzaForm options={this.state.options}
                 id={this.state.addForm}
                 key={this.state.addForm}
                 maxS={this.state.maxS}
@@ -190,7 +189,7 @@ class OrderForm extends React.Component {
                 }
                 else
                     if (pizza.value.ingredients2 !== "") {
-                        if ((!(pizza.value.ingredients2.includes("seafood") && pizza.value.ingredients2.includes("seafood"))) || (!((!pizza.value.ingredients2.includes("seafood")) && (!pizza.value.ingredients2.includes("seafood"))))) {
+                        if (((!pizza.value.ingredients2.includes("seafood")) && pizza.value.ingredients.includes("seafood")) || ((pizza.value.ingredients2.includes("seafood")) && (!pizza.value.ingredients.includes("seafood")))) {
                             seafoodError = true;
                         }
                     }
@@ -231,7 +230,6 @@ class OrderForm extends React.Component {
                 }
                 else
                     if (err.id === -1) {
-                        this.context.sessionTimedOut();
                         this.setState({ openErrorDialogue: true, returnErrorMessage: err.errorText, timeOut: true });
                     }
                     else
@@ -247,7 +245,6 @@ class OrderForm extends React.Component {
 
     render() {
         var appcontext = this.context;
-        const options = this.props.ingredientList.map((i) => { return { value: i, label: i } });
         if (this.state.toLogin || appcontext.timeOut) {
             return <Redirect to='/login' />;
         }
@@ -261,7 +258,7 @@ class OrderForm extends React.Component {
                     <Container fluid>
                         {this.ErrorDialogue()}
                         {this.LocalErrorDialogue()}
-                        <h2 className="text-title">Create your order:</h2> <Button className="infobutton" variant="dark" onClick={() => { this.toggleShow(true) }}>?</Button>
+                        <h2 className="text-title">Create your order: </h2> <p>{this.state.options && this.state.options.map((o) => { return (o.label + o.isDisabled + " ") })}</p> <Button className="infobutton" variant="dark" onClick={() => { this.toggleShow(true) }}>?</Button>
                         {this.getToast()}
                         {this.state.numberOfPizzaError &&
                             <h6 className="error-message">
@@ -269,9 +266,9 @@ class OrderForm extends React.Component {
                                 {(this.state.current_s > this.state.maxS) &&
                                     <tr>Available Small Pizzas: {this.state.maxS},        Amount selected: {this.state.current_s}</tr>}
                                 {(this.state.current_m > this.state.maxM) &&
-                                    <tr><td>Available Medium Pizzas: {this.state.maxM}</td><p className="error-td"></p><td> Amount selected: {this.state.current_m}</td></tr>}
+                                    <tr>Available Medium Pizzas: {this.state.maxM},        Amount selected: {this.state.current_m}</tr>}
                                 {(this.state.current_l > this.state.maxL) &&
-                                    <tr><td>Available Large Pizzas: {this.state.maxL}</td><p className="error-td"></p><td> Amount selected: {this.state.current_l}</td></tr>}
+                                    <tr>Available Large Pizzas: {this.state.maxL},         Amount selected: {this.state.current_l}</tr>}
                             </h6>
                         }
 
@@ -296,7 +293,7 @@ class OrderForm extends React.Component {
 
                         <h5 className="App-price">Total: {this.state.TOTprice}$</h5>
                         <p className="App-buttonAdd">
-                            <button onClick={() => { this.addPizzaForm(options) }}>+</button>
+                            <button onClick={() => { this.addPizzaForm() }}>+</button>
                         </p>
                         <p className="App-buttoncheckout">
                             <button onClick={this.checkOut}>CHECKOUT</button>
