@@ -279,7 +279,7 @@ class OrderForm extends React.Component {
                                         <th style={{ width: '15%' }}>N</th>
                                         <th style={{ width: '20%' }}>Size</th>
                                         <th style={{ width: '43%' }}>Ingredients</th>
-                                        <th style={{ width: '7%' }}> Sauce </th>
+                                        <th style={{ width: '7%' }}> Tomato </th>
                                         <th style={{ width: '15%' }}>Actions</th>
 
                                     </tr>

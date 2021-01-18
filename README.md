@@ -10,17 +10,31 @@
 - Route `/userprofile`: page content and purpose, param specification
 
 ## REST API server
-
+# not authenticated  
 - POST `/api/login`
   - request parameters and request body content
   - response body content
-- GET `/api/pizzeriainfo`
+- POST `/api/signup`
+  - request parameters and request body content
+  - response body content  
+- GET `/api/availability`
   - request parameters
   - response body content
-- POST `/api/something`
+# authenticated  
+- GET `/api/user`
   - request parameters and request body content
   - response body content
-- ...
+- POST `/api/order`
+  - request parameters and request body content
+  - response body content
+- GET `/api//orderlist`
+  - request parameters and request body content
+  - response body content  
+- GET `/api//pizzaorder/:id`
+  - request parameters and request body content
+  - response body content
+
+
 
 ## Server database
 
@@ -28,6 +42,7 @@
 - Table `pizza` - contains id_pizza, id_order(external key to table pizza_order), number, ingredients, seafood(bool), type, price, second_ingredients(if set to "" or null pizza is not split into halves), sauce(default value to 1(true))
 - Table `pizza_order` - contains id_order, id_user(external key to table user), price, tot_pizza, discount, tot_s, tot_m, tot_l
 - Table `pizzeria` - contains id, price_small, price_medium, price_large, daily_small(total number of available pizza for the day), daily_medium, daily_large, available_small, available_medium, available_large
+
 ## Main React Components
 
 - `ListOfSomething` (in `List.js`): component purpose and main functionality
@@ -38,8 +53,15 @@
 
 ## Screenshot
 
-![Configurator Screenshot](./img/screenshot.jpg)
-
+![Configurator Screenshot](./img_screen/pizzascreen1.png)
+(./img_screen/pizzascreen2.png)
+(./img_screen/pizzascreen3.png)
+(./img_screen/pizzascreen4.png)
+(./img_screen/pizzascreen5.png)
+(./img_screen/pizzascreen6.png)
+(./img_screen/pizzascreen7.png)
+(./img_screen/pizzascreenerrorform.png)
+(./img_screen/pizzascreensuccesspopup.png)
 ## Test users
 
 * username, password

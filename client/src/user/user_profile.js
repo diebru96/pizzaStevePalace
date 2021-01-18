@@ -11,7 +11,7 @@ class UserProfile extends React.Component {
 
     constructor(props) {
         super(props);
-        this.state = { result: "RISULTATO QUERY STAMPATO QUI", userId: 0, orderList: [], showList: false, firstShow: true, redirect: false };
+        this.state = { userId: 0, orderList: [], showList: false, firstShow: true, redirect: false };
     }
 
     componentDidMount() {
@@ -33,7 +33,7 @@ class UserProfile extends React.Component {
                 x = -1;
                 this.context.sessionTimedOut();
             }
-            this.setState({ result: "ho fallito a leggere ordini con code " + x, orderList: [], redirect: true, showList: false, firstShow: true });
+            this.setState({ orderList: [], redirect: true, showList: false, firstShow: true });
         });
     }
     render() {
@@ -50,7 +50,7 @@ class UserProfile extends React.Component {
                         {(context) => (
 
                             <Container fluid>
-                                <h2>{this.state.result}</h2>
+
                                 <div className="user-background"></div>
                                 <p className="user-spacer"></p>
                                 <h1 className="user-title">USER PROFILE</h1>

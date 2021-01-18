@@ -30,15 +30,15 @@ window.onscroll = function () { scrollFunction() };
 
 function scrollFunction() {
   if (document.body.scrollTop > 80 || document.documentElement.scrollTop > 80) {
-    document.getElementById("navbar").style.padding = "30px 10px";
+    document.getElementById("navbar").style.padding = "4.5vh";
     document.getElementById("navbar").style.backgroundColor = ` #1a1814`;
-    document.getElementById("logo").style.height = "60px";
+    document.getElementById("logo").style.height = "8.5vh";
     document.getElementById("logo").style.marginLeft = "150px";
 
   } else {
-    document.getElementById("navbar").style.padding = "80px 10px";
+    document.getElementById("navbar").style.padding = "11vh";
     document.getElementById("navbar").style.backgroundColor = `#1a181488`;
-    document.getElementById("logo").style.height = "160px";
+    document.getElementById("logo").style.height = "20vh";
     document.getElementById("logo").style.marginLeft = "90px";
 
   }
@@ -190,11 +190,12 @@ class App extends React.Component {
                         <tbody>
                           <td><Image /></td>
                           <td>
-                            <h5 className="App-ingredients"> {this.state.ingredients.map((i) => { if (i === "seafood") return <tr>{i} (+10% price)</tr>; else return <tr>{i}</tr>; })}</h5>
+                            <h5 className="App-ingredients"> {this.state.ingredients.map((i) => { if (i === "seafood") return <tr>{i} (only on L with +20% price)</tr>; else return <tr>{i}</tr>; })}</h5>
                           </td>
 
                         </tbody>
                       </table>
+
                     </p>
                   </div>
                   <p className="App-changesection1"></p>
@@ -212,13 +213,17 @@ class App extends React.Component {
                       <>
                         <AvailabilityTable pizzeriaInfos={this.state.pizzeriaInfos}></AvailabilityTable>
                         <button className="App-buttonhide" onClick={() => { this.setState({ showInfos: false }) }}>HIDE</button>
+                        <p></p>
+                        <h4 className="h4bottom">Buy 3 pizzas and get a 10% discount</h4>
                       </>
                     }
                     <p className="App-spacer4"></p>
                     <p className="App-buttoncheck">
                       <button onClick={() => { this.getpizzeriaInfo();/* document.getElementById('availability').scrollIntoView();*/ }}>Check availability</button>
                     </p>
+
                     <p>
+
                     </p>
                   </div>
                 </section>
@@ -293,7 +298,7 @@ class App extends React.Component {
           <DialogActions>
             <Button variant="success" onClick={() => this.setState({ orderOk: false })} >
               OK
-                    </Button>
+            </Button>
           </DialogActions>
         </Dialog>
       </div>

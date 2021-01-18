@@ -276,7 +276,6 @@ class PizzaForm extends React.Component {
     getLargePizzaSelectDivided = (animatedComponents) => {
         return (<td className="double-td"> <td><Select
             styles={style}
-            className="select"
             closeMenuOnSelect={false}
             components={animatedComponents}
             value={this.state.val}
@@ -286,7 +285,6 @@ class PizzaForm extends React.Component {
             options={this.state.options} /> </td>
 
             <td className="double-td"><Select
-                className="select"
                 styles={style}
                 closeMenuOnSelect={false}
                 components={animatedComponents}
