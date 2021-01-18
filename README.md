@@ -10,7 +10,7 @@
 - Route `/userprofile`: page content and purpose, param specification
 
 ## REST API server
-# not authenticated  
+### not authenticated  
 - POST `/api/login`
   - request parameters and request body content
   - response body content
@@ -20,7 +20,7 @@
 - GET `/api/availability`
   - request parameters
   - response body content
-# authenticated  
+### authenticated  
 - GET `/api/user`
   - request parameters and request body content
   - response body content
@@ -53,7 +53,8 @@
 
 ## Screenshot
 
-![image](./img_screen/pizzascreen1.png)
+![pizzascreen1](https://user-images.githubusercontent.com/37414945/104959950-96542300-59d3-11eb-9c02-97684ce65f2c.PNG)
+
 
 ## Test users
 
