@@ -53,15 +53,8 @@
 
 ## Screenshot
 
-![Configurator Screenshot](./img_screen/pizzascreen1.png)
-(./img_screen/pizzascreen2.png)
-(./img_screen/pizzascreen3.png)
-(./img_screen/pizzascreen4.png)
-(./img_screen/pizzascreen5.png)
-(./img_screen/pizzascreen6.png)
-(./img_screen/pizzascreen7.png)
-(./img_screen/pizzascreenerrorform.png)
-(./img_screen/pizzascreensuccesspopup.png)
+![image](./img_screen/pizzascreen1.png)
+
 ## Test users
 
 * username, password
