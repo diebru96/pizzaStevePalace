@@ -3,8 +3,7 @@
 const sqlite = require('sqlite3');
 const bcrypt = require('bcrypt');
 const User = require('./user');
-const Pizza = require('./pizza');
-const Order = require('./order');
+
 
 const db = new sqlite.Database('./db/pizza.sqlite', (err) => {
     if (err) throw err;
@@ -168,6 +167,7 @@ exports.getListOrders = function (id) {
         });
     });
 };
+
 exports.getPizzaInOrder = function (id_order) {
     return new Promise((resolve, reject) => {
         const sql = 'SELECT * FROM pizza WHERE id_order=(?)';

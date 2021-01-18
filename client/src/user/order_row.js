@@ -7,6 +7,7 @@ import Button from 'react-bootstrap/Button';
 import Alert from 'react-bootstrap/Alert';
 import { Redirect, Link } from 'react-router-dom';
 import API from './../api/API';
+import { AppContext } from '../app_contexts';
 
 class OrderRow extends React.Component {
 
@@ -54,11 +55,17 @@ class OrderRow extends React.Component {
         if (!this.state.showPizza) {
             if (this.state.firstTime) {
                 API.getPizzasInOrder(this.props.order.id_order).then((pizzas) => {
-                    var pizzalist = (<ul>{this.ListPizzas(pizzas)}</ul>);
-                    this.setState({ pizzalist: pizzalist, showPizza: false, firstTime: false, showPizza: true });
+                    if (pizzas.id === -1) {
+                        this.context.sessionTimedOut();
+                        this.setState({ pizzalist: "", firstTime: true });
+                    }
+                    else {
+                        var pizzalist = (<ul>{this.ListPizzas(pizzas.pizzas)}</ul>);
+                        this.setState({ pizzalist: pizzalist, showPizza: false, firstTime: false, showPizza: true });
+                    }
                 }).catch((err) => {
                     if (err.id === -1) {
-                        this.props.context.sessionTimedOut();
+                        this.context.sessionTimedOut();
                     }
                     this.setState({ pizzalist: "", firstTime: true });
                 });
@@ -105,4 +112,5 @@ class OrderRow extends React.Component {
     }
 
 }
+OrderRow.contextType = AppContext;
 export default OrderRow;

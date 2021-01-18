@@ -102,6 +102,7 @@ app.use(
 // To return a better object in case of errors
 app.use(function (err, req, res, next) {
     if (err.name === 'UnauthorizedError') {
+        console.log("ERRORE UNAUTHORIZED RITORNO ID=-1");
         res.status(401).json({id:-1,errtype: "Authorization error", errorText: "Your login session is expired, please retry to login"});
     }
 });
@@ -168,14 +169,14 @@ app.post(BASEURI + '/order', (req, res) => {
 
 //GET PIZZA
 app.get(BASEURI + '/pizzaorder/:id', (req, res) => {
-    DAO.getPizzaInOrder(req.params.id).then((orders) => res.json(orders));
+    DAO.getPizzaInOrder(req.params.id).then((pizzas) => res.json({id: 1, pizzas: pizzas}));
 });
 
 
 //GET ORDERS
 app.get(BASEURI + '/orderlist', (req, res) => {
     console.log(req.user.userauth);
-    DAO.getListOrders(req.user.userauth).then((orders) => res.json(orders));
+    DAO.getListOrders(req.user.userauth).then((orders) => res.json({id: 1,orders:orders}));
 });
 
 app.listen(PORT, () => console.log(`Server running on http://localhost:${PORT}/`));

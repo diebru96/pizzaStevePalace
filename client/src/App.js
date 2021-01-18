@@ -43,6 +43,7 @@ function scrollFunction() {
 
   }
 }
+
 class App extends React.Component {
   constructor(props) {
     super(props);
@@ -51,13 +52,18 @@ class App extends React.Component {
 
   componentDidMount() {
     //CHECK AUTH
+    this.checkAuth();
+  }
+
+  checkAuth = () => {
+    //CHECK AUTH
     API.isAuthenticated().then(
       (user) => {
         this.setState({ authUser: user, userlogged: true, username: user.username, timeOut: false });
       }
     ).catch((err) => {
       //Timeout è per switchare pagina da order e user
-      this.setState({ authUser: {}, userLogged: false, timeOut: true, });
+      this.setState({ authUser: {}, userlogged: false, username: "", timeOut: true });
       // this.props.history.push("/login");
     });
   }
@@ -127,7 +133,7 @@ class App extends React.Component {
 
           <nav class="nav-menu" id="navbar">
             <img id="logo" src="./pizzalogo.png" className="App-logo" alt="logo" />
-            <h3 className="App-titleBar"> <Link to="/" onClick={() => this.setState({ homeHeader: true })}><h3 className="App-titleBar"> Pizza Steve Palace</h3></Link></h3>
+            <h3 className="App-titleBar"> <Link to="/" onClick={() => { this.setState({ homeHeader: true }); this.checkAuth(); }}><h3 className="App-titleBar"> Pizza Steve Palace</h3></Link></h3>
             <ul>
               <li class="active"><a href="/" onClick={() => this.setState({ homeHeader: true })}>Home</a></li>
               {this.state.homeHeader && <>

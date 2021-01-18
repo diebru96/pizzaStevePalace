@@ -29,7 +29,7 @@ class OrderForm extends React.Component {
 
     constructor(props) {
         super(props);
-        this.state = { options: null, id: -1, userId: 1, pizzaList: [], pizzaForms: [], submitted: false, addForm: 0, infos: [], maxS: 1, maxM: 1, maxL: 1, TOTprice: 0, ordered: false, current_s: 1, current_m: 0, current_l: 0, discount: 0, numberOfPizzaError: false, allowTransaction: true, errorMessage: "", openErrorDialogue: false, openLocalErrorDialogue: false, returnErrorMessage: "", toLogin: false, timeOut: false, show: false };
+        this.state = { options: [], id: -1, userId: 1, pizzaList: [], pizzaForms: [], submitted: false, addForm: 0, infos: [], maxS: 1, maxM: 1, maxL: 1, TOTprice: 0, ordered: false, current_s: 1, current_m: 0, current_l: 0, discount: 0, numberOfPizzaError: false, allowTransaction: true, errorMessage: "", openErrorDialogue: false, openLocalErrorDialogue: false, returnErrorMessage: "", toLogin: false, timeOut: false, show: false };
     }
     componentDidMount() {
         var appcontext = this.context;
@@ -258,7 +258,7 @@ class OrderForm extends React.Component {
                     <Container fluid>
                         {this.ErrorDialogue()}
                         {this.LocalErrorDialogue()}
-                        <h2 className="text-title">Create your order: </h2> <p>{this.state.options && this.state.options.map((o) => { return (o.label + o.isDisabled + " ") })}</p> <Button className="infobutton" variant="dark" onClick={() => { this.toggleShow(true) }}>?</Button>
+                        <h2 className="text-title">Create your order: </h2><Button className="infobutton" variant="dark" onClick={() => { this.toggleShow(true) }}>?</Button>
                         {this.getToast()}
                         {this.state.numberOfPizzaError &&
                             <h6 className="error-message">
@@ -323,6 +323,9 @@ class OrderForm extends React.Component {
                     </DialogContent>
                     <DialogActions>
                         <Button onClick={() => {
+                            if (this.state.timeOut) {
+                                this.context.sessionTimedOut();
+                            }
                             this.setState({ openErrorDialogue: false, toLogin: this.state.timeOut });
                         }} variant="danger">
                             OK
