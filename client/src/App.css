@@ -191,19 +191,19 @@ background: linear-gradient(180deg, rgba(109,105,105,0.6814075972185749) 0%, rgb
   margin-right: 0px;
 }
 .nav-menu {
-  overflow: hidden;
-  padding: 11vh; /* Large padding which will shrink on scroll (using JS) */
+ /* overflow: hidden;*/
+  padding: 8vh; /* Large padding which will shrink on scroll (using JS) */
   margin-top:10px 0px;
-  z-index: 90;
-  position: fixed; /* Sticky/fixed navbar */
+ /* z-index: 90;*/
+ /* position: fixed;*/ /* Sticky/fixed navbar */
   width: 100%;
-  top: 0; /* At the top */
+  /*top: 0;*/ /* At the top */
   transition: 0.4s;
-  margin-right: auto;
-  margin-left: auto;
-  height:60px;
-  display: flex;
-  align-items: center;
+  /*margin-right: auto;*/
+  /*margin-left: auto;*/
+  /*height:60px;*/
+ /* display: flex;*/
+ /* align-items: center;*/
   background-color: #1a181488;
 }
 
@@ -232,11 +232,14 @@ background: linear-gradient(180deg, rgba(109,105,105,0.6814075972185749) 0%, rgb
 .nav-menu a {
   display: block;
   position: relative;
+  margin-left: 30px;
   color: white;
   transition: 0.3s;
   font-size: 14px;
   font-family: "Open Sans", sans-serif;
 }
+
+
 
 .nav-menu a:hover, .nav-menu .active > a, .nav-menu li:hover > a {
   color: #d9ba85;
@@ -259,83 +262,22 @@ background: linear-gradient(180deg, rgba(109,105,105,0.6814075972185749) 0%, rgb
   color: #fff;
 }
 
-.nav-menu .drop-down ul {
-  
-  display: block;
-  position: absolute;
-  left: 15px;
-  top: calc(100% + 30px);
-  z-index: 99;
-  opacity: 0;
-  visibility: hidden;
-  padding: 10px 0;
-  background: #fff;
-  box-shadow: 0px 0px 30px rgba(127, 137, 161, 0.25);
+.nav-menu .logout a {
+  color: #fff;
+  padding-top: 8px;
+  text-transform: uppercase;
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 1px;
   transition: 0.3s;
 }
 
-.nav-menu .drop-down:hover > ul {
-  opacity: 1;
-  top: 100%;
-  visibility: visible;
-}
-
-.nav-menu .drop-down li {
-  min-width: 180px;
-  position: relative;
-}
-
-.nav-menu .drop-down ul a {
-  padding: 10px 20px;
-  font-size: 14px;
-  font-weight: 500;
-  text-transform: none;
-  color: #1a1814;
-}
-
-.nav-menu .drop-down ul a:hover, .nav-menu .drop-down ul .active > a, .nav-menu .drop-down ul li:hover > a {
+.nav-menu .logout a:hover {
   color: #cda45e;
 }
 
-.nav-menu .drop-down > a:after {
-  content: "\ea99";
-  font-family: IcoFont;
-  padding-left: 5px;
-}
 
-.nav-menu .drop-down .drop-down ul {
-  top: 0;
-  left: calc(100% - 30px);
-}
 
-.nav-menu .drop-down .drop-down:hover > ul {
-  opacity: 1;
-  top: 0;
-  left: 100%;
-}
-
-.nav-menu .drop-down .drop-down > a {
-  padding-right: 35px;
-}
-
-.nav-menu .drop-down .drop-down > a:after {
-  content: "\eaa0";
-  font-family: IcoFont;
-  position: absolute;
-  right: 15px;
-}
-
-@media (max-width: 1366px) {
-  .nav-menu .drop-down .drop-down ul {
-    left: -90%;
-  }
-  .nav-menu .drop-down .drop-down:hover > ul {
-    left: -100%;
-  }
-  .nav-menu .drop-down .drop-down > a:after {
-    content: "\ea9d";
-  }
-}
 /* !FINE NAVMENU*/
 
 .App-buttoncheck{
@@ -395,4 +337,17 @@ background: linear-gradient(180deg, rgba(109,105,105,0.6814075972185749) 0%, rgb
 
 .h4bottom{
   font-family: "Lucida Handwriting";
+}
+
+.Navlinktext{
+  color: white;
+  transition: 0.3s;
+}
+
+.Navlinktext :hover{
+  color: #d9ba85;
+}
+
+.navright{
+  margin-right: 10vh;
 }

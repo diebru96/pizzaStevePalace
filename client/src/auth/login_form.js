@@ -1,12 +1,9 @@
 import React from 'react';
 import Form from 'react-bootstrap/Form';
 import Container from 'react-bootstrap/Container';
-import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import Button from 'react-bootstrap/Button';
-import Alert from 'react-bootstrap/Alert';
 import { Redirect, Link } from 'react-router-dom';
-import API from './../api/API';
 import './../App.css'
 import { AppContext } from '.././app_contexts';
 
@@ -15,7 +12,7 @@ class LoginForm extends React.Component {
 
     constructor(props) {
         super(props);
-        this.state = { email: '', password: '', submitted: false, username: 'non presente' };
+        this.state = { email: '', password: '', submitted: false };
     }
 
 
@@ -84,17 +81,7 @@ class LoginForm extends React.Component {
 
 
 }
-const style = {
-    control: (base, state) => ({
-        ...base,
-        // borderWidth: state.isFocused ? "5px" : "1px",
-        borderColor: state.isFocused ? "#cda45e" : " rgba(158, 158, 158, 0.801)",
-        boxShadow: state.isFocused && "1px 1px 2px 1px  #cda45ebb",
-        "&:hover": {
-            borderColor: state.isFocused && "#cda45e"
-        }
-    })
-};
+
 
 
 export default LoginForm;

@@ -15,11 +15,14 @@ class UserProfile extends React.Component {
     }
 
     componentDidMount() {
+        //setto header piccolo(useful especially when the page is refreshed)
         var appcontext = this.context;
         appcontext.changeHeader(false);
     }
 
+    ///To get orderlist
     getOrders = () => {
+        //if(id===-1) the session is expired, so i redirect the user to the login page (SESSIONTIMEDOUT => appcontext.timeout=false), if i have other errors i redirect the user to the home
         API.getOrderList().then((orders) => {
             if (orders.id === -1) {
                 this.context.sessionTimedOut();

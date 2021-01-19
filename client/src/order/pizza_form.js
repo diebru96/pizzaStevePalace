@@ -1,22 +1,11 @@
 import React from 'react';
-import Form from 'react-bootstrap/Form';
-import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
-import Col from 'react-bootstrap/Col';
-import Table from 'react-bootstrap/Table'
 import Button from 'react-bootstrap/Button';
-import Alert from 'react-bootstrap/Alert';
-import { Redirect, Link } from 'react-router-dom';
-import API from './../api/API';
-import Pizza from './pizza';
-import Order from './order';
 import Select from "react-select";
 import makeAnimated from 'react-select/animated';
 import trash from 'bootstrap-icons/icons/trash.svg';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Checkbox from '@material-ui/core/Checkbox';
-import CheckBoxOutlineBlankIcon from '@material-ui/icons/CheckBoxOutlineBlank';
-import CheckBoxIcon from '@material-ui/icons/CheckBox';
 
 
 // onChange={(values) => this.setValues(values)}

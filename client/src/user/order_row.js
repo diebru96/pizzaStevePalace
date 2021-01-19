@@ -1,11 +1,4 @@
 import React from 'react';
-import Form from 'react-bootstrap/Form';
-import Container from 'react-bootstrap/Container';
-import Row from 'react-bootstrap/Row';
-import Col from 'react-bootstrap/Col';
-import Button from 'react-bootstrap/Button';
-import Alert from 'react-bootstrap/Alert';
-import { Redirect, Link } from 'react-router-dom';
 import API from './../api/API';
 import { AppContext } from '../app_contexts';
 
@@ -17,6 +10,39 @@ class OrderRow extends React.Component {
     }
 
 
+    ///Function to get the detailed content of an order
+    ///first time used to not make multiple request when re-tapped
+    ///session timedout triggered if session expired
+    getPizzaList = () => {
+        if (!this.state.showPizza) {
+            if (this.state.firstTime) {
+                API.getPizzasInOrder(this.props.order.id_order).then((pizzas) => {
+                    if (pizzas.id === -1) {
+                        this.context.sessionTimedOut();
+                        this.setState({ pizzalist: "", firstTime: true });
+                    }
+                    else {
+                        var pizzalist = (<ul>{this.ListPizzas(pizzas.pizzas)}</ul>);
+                        this.setState({ pizzalist: pizzalist, showPizza: false, firstTime: false, showPizza: true });
+                    }
+                }).catch((err) => {
+                    if (err.id === -1) {
+                        this.context.sessionTimedOut();
+                    }
+                    this.setState({ pizzalist: "", firstTime: true });
+                });
+            }
+            else
+                this.setState({ showPizza: true });
+
+        }
+        else {
+            this.setState({ showPizza: false });
+        }
+
+    }
+
+    ///Function to order and parse the order content and display it correctly
     ListPizzas = (pizzas) => {
         if (pizzas === "")
             return <li>error getting pizzas</li>
@@ -50,36 +76,6 @@ class OrderRow extends React.Component {
         });
 
     }
-
-    getPizzaList = () => {
-        if (!this.state.showPizza) {
-            if (this.state.firstTime) {
-                API.getPizzasInOrder(this.props.order.id_order).then((pizzas) => {
-                    if (pizzas.id === -1) {
-                        this.context.sessionTimedOut();
-                        this.setState({ pizzalist: "", firstTime: true });
-                    }
-                    else {
-                        var pizzalist = (<ul>{this.ListPizzas(pizzas.pizzas)}</ul>);
-                        this.setState({ pizzalist: pizzalist, showPizza: false, firstTime: false, showPizza: true });
-                    }
-                }).catch((err) => {
-                    if (err.id === -1) {
-                        this.context.sessionTimedOut();
-                    }
-                    this.setState({ pizzalist: "", firstTime: true });
-                });
-            }
-            else
-                this.setState({ showPizza: true });
-
-        }
-        else {
-            this.setState({ showPizza: false });
-        }
-
-    }
-
     render() {
         const order = this.props.order;
 

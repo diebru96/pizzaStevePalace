@@ -180,6 +180,5 @@ exports.getPizzaInOrder = function (id_order) {
             resolve(pizzas);
         });
 
-
     });
 };
