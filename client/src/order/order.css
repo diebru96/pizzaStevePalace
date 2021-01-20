@@ -11,6 +11,21 @@
     margin-left: 85%;
    
 }
+.App-price-discount{
+    width:100%;
+    margin-left: 85%;
+   color:rgb(146, 139, 139);
+}
+
+.infosplitmessage{
+    text-align: center;
+    color:rgb(146, 139, 139);
+    padding-right: 20px;
+}
+
+.infosplitmessage tr{
+    margin-right: 20px;
+}
 
 .error-td{
     width:1px;

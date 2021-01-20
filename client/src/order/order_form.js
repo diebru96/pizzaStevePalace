@@ -23,11 +23,12 @@ class OrderForm extends React.Component {
 
     constructor(props) {
         super(props);
-        this.state = { options: [], id: -1, userId: 1, pizzaList: [], pizzaForms: [], submitted: false, addForm: 0, infos: [], maxS: 1, maxM: 1, maxL: 1, TOTprice: 0, ordered: false, current_s: 1, current_m: 0, current_l: 0, discount: 0, numberOfPizzaError: false, allowTransaction: true, errorMessage: "", openErrorDialogue: false, openLocalErrorDialogue: false, returnErrorMessage: "", toLogin: false, timeOut: false, show: false };
+        this.state = { options: [], pizzaList: [], pizzaForms: [], addForm: 0, infos: [], maxS: 1, maxM: 1, maxL: 1, TOTprice: 0, ordered: false, current_s: 1, current_m: 0, current_l: 0, discount: 0, numberOfPizzaError: false, allowTransaction: true, errorMessage: "", openErrorDialogue: false, openLocalErrorDialogue: false, returnErrorMessage: "", toLogin: false, timeOut: false, show: false };
     }
     componentDidMount() {
         var appcontext = this.context;
         appcontext.changeHeader(false);
+        ///check about availability and disable seafood(enabled in L pizzas)
         const ingr = this.props.ingredientList.map((i) => { if (i !== "seafood") { return { value: i, label: i }; } else { return { value: i, label: i, isDisabled: true }; } });
         API.pizzeriaInfos().then((info) => {
             this.setState({ options: ingr, infos: info, maxS: info[0].available_s, maxM: info[0].available_m, maxL: info[0].available_l });
@@ -36,6 +37,8 @@ class OrderForm extends React.Component {
 
     }
 
+    /*****PIZZA OPERATION *****/
+    ///ADD (a list of pizza and a list of forms)
     addPizzaForm = () => {
         let pizzaForms = this.state.pizzaForms;
 
@@ -52,7 +55,6 @@ class OrderForm extends React.Component {
             />
         }
         )
-
         const pizza = new Pizza(1, 0, "", false, 4, 1);
         let pizzaList = this.state.pizzaList;
         pizzaList.push({
@@ -61,9 +63,8 @@ class OrderForm extends React.Component {
         })
         this.setState({ pizzaForms: pizzaForms, addForm: this.state.addForm + 1, pizzaList: pizzaList });
         this.estimateTotalPriceAndNumber(pizzaList);
-        //  return pizzaForms;
     }
-
+    ///REMOVE
     removePizza = (id) => {
         console.log(id);
         let pizzaForms = this.state.pizzaForms;
@@ -72,26 +73,16 @@ class OrderForm extends React.Component {
         this.setState({ id: id, pizzaForms: newList, pizzaList: newPizzaList });
         this.estimateTotalPriceAndNumber(newPizzaList);
     }
-
+    ///UPDATE(call to estimatepizzaprice, estimate total price and number)
     updatePizza = (id, number, size, ingredients, special, sauce, ingredients2) => {
         const price = this.estimatePizzaPrice(number, size, special);
         let newPizza;
-        /*   if (ingredients2 === "" || size != 2) {
-               //PIZZA UNICA
-               const pizza = new Pizza(number, size, ingredients, special, price, sauce);
-               newPizza = {
-                   id: id,
-                   value: pizza
-               };
-        }*/
-        //       else {
-        /// SE LA PIZZA E' DIVISA IN 2
         const pizza = new Pizza(number, size, ingredients, special, price, sauce, ingredients2);
         newPizza = {
             id: id,
             value: pizza
         };
-        //     }
+
         let newPizzaList = this.state.pizzaList.map((item) => {
             if (item.id == id) {
                 return newPizza;
@@ -99,11 +90,11 @@ class OrderForm extends React.Component {
             else
                 return item;
         });
-        //  var tutto = number + " " + size + " " + ingredients + special;
         this.estimateTotalPriceAndNumber(newPizzaList);
         this.setState({ pizzaList: newPizzaList });
     }
-
+    /**********/
+    ///stima prezzo della singola pizza
     estimatePizzaPrice = (number, size, special) => {
         let standardPrice = 0;
         switch (size) {
@@ -124,12 +115,13 @@ class OrderForm extends React.Component {
             price = price + (price / 5);
         return price;
     }
-
+    ///stima prezzo ordine e numero pizze e faccio check per vedere se ho sforato sul numero di pizze
     estimateTotalPriceAndNumber = (newPizzaList) => {
         let prezzo = 0;
         let current_s = 0;
         let current_m = 0;
         let current_l = 0;
+        ///creo una lista di prezzi e nel mentre conto quante pizze per ogni tipo
         let priceList = newPizzaList.map((pizza) => {
             if (pizza.value.type === 0) {
                 current_s = current_s + pizza.value.number;
@@ -156,6 +148,7 @@ class OrderForm extends React.Component {
         this.checkAvailability(current_s, current_m, current_l);
     }
 
+    ///trigger the red error on top page if number ordered>number available
     checkAvailability = (s, m, l) => {
         let allow = true;
         let error = false;
@@ -164,10 +157,8 @@ class OrderForm extends React.Component {
             error = true;
         }
         this.setState({ allowTransaction: allow, numberOfPizzaError: error });
-
-
     }
-
+    ///Final check before submitting th order to the server
     finalCheck = () => {
         if (!this.state.allowTransaction) {
             this.setState({ errorMessage: "Too many pizzas selected" });
@@ -202,6 +193,7 @@ class OrderForm extends React.Component {
             }
         }
     }
+    ///Checkout, if passes final check submitted to the server (if response ok i'm redirected to the home, else i can correct my order)    
     checkOut = () => {
         if (this.finalCheck()) {
             ///BISOGNA AGGIUNGERE TUTTI I CHECK SU INGREDIENTI E CONFORMITA'
@@ -209,7 +201,7 @@ class OrderForm extends React.Component {
             const totPizzas = this.state.current_l + this.state.current_m + this.state.current_s;
             //AGGIUNGERE CONTA S M L
 
-            var order = new Order(this.state.userId, this.state.TOTprice, totPizzas, this.state.current_s, this.state.current_m, this.state.current_l, pizzas, this.state.discount);
+            var order = new Order(this.state.TOTprice, totPizzas, this.state.current_s, this.state.current_m, this.state.current_l, pizzas, this.state.discount);
             var orderJson = order.toJson();
             API.createOrder(orderJson).then((id) => {
                 if (id) {
@@ -286,18 +278,20 @@ class OrderForm extends React.Component {
                         }
 
                         <h5 className="App-price">Total: {this.state.TOTprice}$</h5>
+                        {this.state.discount && <h7 className="App-price-discount">10% discount</h7>}
                         <p className="App-buttonAdd">
                             <button onClick={() => { this.addPizzaForm() }}>+</button>
                         </p>
                         <p className="App-buttoncheckout">
                             <button onClick={this.checkOut}>CHECKOUT</button>
                         </p>
+                        <p> </p>
 
                     </Container>
 
                 );
     }
-
+    /******DIALOGUES ******/
     ErrorDialogue = () => {
         return (
             <div>
@@ -356,7 +350,9 @@ class OrderForm extends React.Component {
             </div>
         );
     }
+    /*********/
 
+    /******INFO TOAST ******/
     toggleShow = (value) => {
         this.setState({ show: value });
     }
@@ -381,6 +377,7 @@ class OrderForm extends React.Component {
             </Toast.Body>
         </Toast>
     }
+    /********/
 }
 
 OrderForm.contextType = AppContext; // TO ACCESS CONTEXT VALUES WITH THIS

@@ -46,21 +46,14 @@ app.post(BASEURI + '/login', (req, res) => {
     // read username and password from request body
     const email = req.body.email;
     const password = req.body.password;
-    console.log("LOGIN " + email + "  " + password);
-
     // filter user from the users array by username and password
     DAO.loginUser(email).then((user) => {
-        console.log(user.username);
         if (user != null) {
 
             if (DAO.checkPassword(password, user)) {
                 console.log("CHECK PASSWORD OK, user hash :" + user.hash);
                 const accessToken = jwt.sign({ userauth: user.id }, jwtSecret, { expiresIn: '20m' });
-                console.log("Setto access token");
                 res.cookie('token', accessToken, { httpOnly: true, sameSite: true, maxAge: 1000 * expireTime });
-
-                console.log("Setto COOKIE");
-
                 res.json({ username: user.username, email: user.email });
                 res.end();
 
@@ -78,7 +71,6 @@ app.post(BASEURI + '/login', (req, res) => {
 
         // Delay response when wrong user/pass is sent to avoid fast guessing attempts
         (err) => {
-            console.log("CASO CATCH LOGIN");
             new Promise((resolve) => { setTimeout(resolve, 1000) }).then(() => res.status(401).json({errorid:0, message: "email non valida"}))
         });
 });
@@ -109,16 +101,12 @@ app.use(function (err, req, res, next) {
 
 ////AUTHENTICATED REST ENDPOINTS
 app.get(BASEURI + '/user', (req, res) => {
-    console.log(req.user);
     const userid = req.user.userauth;
-    console.log(userid);
     DAO.getUserById(userid)
         .then((user) => {
-            console.log("SUCCESSO GETUSER BY ID");
             res.json({ id: userid, username: user.username, email: user.email });
         }).catch(
             (err) => {
-                console.log("ERRORE");
                 res.status(401).json(authErrorObj);
             }
         );
@@ -131,25 +119,17 @@ app.post(BASEURI + '/order', (req, res) => {
         res.status(401).json({ id: -1, error: err, errorText: "Your login session is expired, please retry to login" });
         res.end();
     }
-    console.log("ENTRO IN POST CREATE ORDER");
     const order = req.body.order;
     const pizzas = order.pizzas;
     const userid = req.user.userauth;
-    console.log(" USER ORDER " + userid);
     DAO.pizzaavailability().then((v) => {
-        console.log("FATTO CHECK SU PIZZA AVAILABILITY");
-
         if ((order.tot_s <= v[0].available_s) && (order.tot_m <= v[0].available_m) && (order.tot_l <= v[0].available_l)) {
             const s = v[0].available_s - order.tot_s;
             const m = v[0].available_m - order.tot_m;
             const l = v[0].available_l - order.tot_l;
-            console.log("L:" + l + " M:" + m + " S:" + s + "ORDER TOtS:" + order.tot_s);
             DAO.createOrder(userid, order).then((id) => {
-                console.log("CREATO ORDINE CON ID " + id);
                 pizzas.map((pizza) => {
                     DAO.createPizza(id, pizza).then((id) => {
-                        console.log("CREATA PIZZA CON ID " + id);
-
                     });
                 });
                 res.status(201).json({ id: id });
@@ -157,8 +137,6 @@ app.post(BASEURI + '/order', (req, res) => {
             });
         }
         else {
-            console.log("ERRORE 404");
-            ///AGGIUNGERE CASISTICA ERRORE
             res.status(404).json({ id: 0, s: v[0].available_s, m: v[0].available_m, l: v[0].available_l });
         }
     });
@@ -175,7 +153,6 @@ app.get(BASEURI + '/pizzaorder/:id', (req, res) => {
 
 //GET ORDERS
 app.get(BASEURI + '/orderlist', (req, res) => {
-    console.log(req.user.userauth);
     DAO.getListOrders(req.user.userauth).then((orders) => res.json({id: 1,orders:orders}));
 });
 

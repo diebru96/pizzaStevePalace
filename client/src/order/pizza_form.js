@@ -8,13 +8,12 @@ import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Checkbox from '@material-ui/core/Checkbox';
 
 
-// onChange={(values) => this.setValues(values)}
 
 class PizzaForm extends React.Component {
 
     constructor(props) {
         super(props);
-        this.state = { options: "", number: 1, ingredients: "", ingredients2: "", special: false, pizzaType: [{ value: 0, label: "S" }], type: 0, submitted: false, val: [], val2: [], maxS: 1, maxM: 1, maxL: 1, checkedDivided: false, checkedSauce: true };
+        this.state = { options: "", number: 1, ingredients: "", ingredients2: "", special: false, pizzaType: [{ value: 0, label: "S" }], type: 0, submitted: false, val: [], val2: [], maxS: 1, maxM: 1, maxL: 1, checkedDivided: false, checkedSauce: true, infosplit: false };
         this.onChange = this.onChange.bind(this);
         this.onChange2 = this.onChange2.bind(this);
         this.onChangeType = this.onChangeType.bind(this);
@@ -26,8 +25,8 @@ class PizzaForm extends React.Component {
 
     }
 
-
-
+    /***HANDLING SELECT CHANGES *****/
+    ///handlig basic select/select ingredients1 changes 
     onChange = (option, { action }) => {
         let ingredients = "";
         let ingredients2 = "";
@@ -49,6 +48,8 @@ class PizzaForm extends React.Component {
             let val2 = this.state.val2;
             for (var i of ingr) {
                 ingredients = ingredients + i + " ";
+                if (i === "seafood")
+                    special = true;
             }
             /// SE LA PIZZA DIVISA IN 2 faccio update anche con ingredienti2
             if (this.state.type === 2 && this.state.checkedDivided) {
@@ -61,12 +62,14 @@ class PizzaForm extends React.Component {
 
     };
 
+    ///handlig select ingredients2 changes 
     onChange2 = (option, { action }) => {
         let ingredients2 = "";
 
         if (action === "clear") {
             if (option === null) {
                 option = [];
+                this.triggerSplitInfoMessage(true);
             }
         }
         if (action === "remove-value") {
@@ -75,6 +78,13 @@ class PizzaForm extends React.Component {
             }
         }
         if (option.length <= 3) {
+
+            if (option.length > 0) {
+                this.triggerSplitInfoMessage(false);
+            }
+            else {
+                this.triggerSplitInfoMessage(true);
+            }
             const ingr2 = option.map((i) => { return (i.label) });
             for (var i of ingr2) {
                 ingredients2 = ingredients2 + i + " ";
@@ -84,7 +94,7 @@ class PizzaForm extends React.Component {
         }
     };
 
-
+    ///handling type changes(check on availability and seafood)
     onChangeType = (option, { action }) => {
         var type;
         var number = this.state.number;
@@ -121,13 +131,16 @@ class PizzaForm extends React.Component {
                 ingr2 = "";
                 special = false;
             }
+            ////I make seafoods availables when i choose L pizzas
             var tempOptions;
             if (type === 2) {
                 tempOptions = this.state.options.map((o) => { if (o.label !== "seafood") return o; else return { value: "seafood", label: "seafood", isDisabled: false } })
+                if (this.state.checkedDivided && this.state.ingredients2 === "") {
+                    this.triggerSplitInfoMessage(true);
+                }
             }
             else {
                 tempOptions = this.state.options.map((o) => { if (o.label !== "seafood") return o; else return { value: "seafood", label: "seafood", isDisabled: true } })
-
             }
 
         }
@@ -136,13 +149,17 @@ class PizzaForm extends React.Component {
         this.setState({ options: tempOptions, pizzaType: option, action: action, type: type, number: number, val: val, val2: val2, ingredients: ingr, special: special, ingredients2: ingr2 });
         this.props.updatePizza(this.props.id, number, type, ingr, special, this.state.checkedSauce, ingr2);
     };
+    /**************/
 
+    /*******HANDLE CHECKBOXES ******/
+    ///large pizza splitted
     handleCheckDividedChange = (event) => {
         var ingr2 = this.state.ingredients2;
         var ingr1 = this.state.ingredients1;
         var val1 = this.state.val;
         if (!event.target.checked) {
             ingr2 = "";
+            this.triggerSplitInfoMessage(false);
         }
         else {
             val1 = [];
@@ -155,17 +172,26 @@ class PizzaForm extends React.Component {
                     j++;
                 }
             }
+            this.triggerSplitInfoMessage(true);
         }
         this.setState({ checkedDivided: event.target.checked, ingredients2: ingr2, ingredients: ingr1, val: val1 });
         this.props.updatePizza(this.props.id, this.state.number, this.state.type, ingr1, this.state.special, this.state.checkedSauce, ingr2);
 
     };
+    ///tomato checkbox   
     handleCheckSauceChange = (event) => {
         this.setState({ checkedSauce: event.target.checked });
         this.props.updatePizza(this.props.id, this.state.number, this.state.type, this.state.ingredients, this.state.special, event.target.checked, this.state.ingredients2);
     };
 
+    /***********/
 
+    ///info message about splitted pizza
+    triggerSplitInfoMessage = (v) => {
+        this.setState({ infosplit: v })
+    }
+
+    /****BUTTONS FOR CHANGE NUMBER (little checks to avoid non sense numbers)**** */
     buttonMore = () => {
         if ((this.state.type == 0 && this.state.number < this.state.maxS) || (this.state.type == 1 && this.state.number < this.state.maxM) || (this.state.type == 2 && this.state.number < this.state.maxL)) {
             var n = this.state.number + 1;
@@ -180,7 +206,7 @@ class PizzaForm extends React.Component {
             this.props.updatePizza(this.props.id, n, this.state.type, this.state.ingredients, this.state.special, this.state.checkedSauce, this.state.ingredients2);
         }
     }
-
+    /*****************/
 
 
 
@@ -223,7 +249,13 @@ class PizzaForm extends React.Component {
 
                 </td>
                 {(this.state.type == 2 && this.state.checkedDivided) ?
-                    this.getLargePizzaSelectDivided(animatedComponents)
+                    <>
+                        {
+                            this.getLargePizzaSelectDivided(animatedComponents)
+                        }
+
+                    </>
+
                     :
                     this.getPizzaSelect(animatedComponents)
                 }
@@ -234,7 +266,7 @@ class PizzaForm extends React.Component {
                                 checked={this.state.checkedSauce}
                                 onChange={this.handleCheckSauceChange}
                                 name="sauce"
-                                color='red'
+                                color="dark"
                             />
                         }
 
@@ -245,7 +277,8 @@ class PizzaForm extends React.Component {
 
         );
     }
-
+    /******SELECTS *****/
+    /// single pizza
     getPizzaSelect = (animatedComponents) => {
 
         return (<td><Select
@@ -257,11 +290,10 @@ class PizzaForm extends React.Component {
             isMulti
             className="basic-multi-select"
             classNamePrefix="select"
-            // isClearable={this.state.value.some(v => !v.isFixed)}
             options={this.state.options} /></td>
         );
     }
-
+    //splitted pizza
     getLargePizzaSelectDivided = (animatedComponents) => {
         return (<td className="double-td"> <td><Select
             styles={style}
@@ -270,7 +302,6 @@ class PizzaForm extends React.Component {
             value={this.state.val}
             onChange={this.onChange}
             isMulti
-            // isClearable={this.state.value.some(v => !v.isFixed)}
             options={this.state.options} /> </td>
 
             <td className="double-td"><Select
@@ -280,13 +311,19 @@ class PizzaForm extends React.Component {
                 value={this.state.val2}
                 onChange={this.onChange2}
                 isMulti
-                //isClearable={this.state.val2.some(v => !v.isFixed)}
                 options={this.state.options} /> </td>
+
+            {
+                this.state.infosplit &&
+                <h7 className="infosplitmessage"><tr>If no ingredients selected in the second half, this pizza will be considered as not splitted</tr></h7>
+            }
+
         </td>
         );
     }
 }
 
+///To change style of the selects
 const style = {
     option: (provided, state) => ({
         ...provided,
