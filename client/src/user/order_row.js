@@ -65,11 +65,11 @@ class OrderRow extends React.Component {
                     {(pizza.second_ingredients === "") ?
                         (pizza.sauce) ?
                             <td>{pizza.ingredients}</td> :
-                            <><td>{pizza.ingredients}</td><td>NO sauce</td></>
+                            <><td>{pizza.ingredients}</td><td>NO Tomato</td></>
                         :
                         (pizza.sauce) ?
                             <><td>{pizza.ingredients} |</td>  <td>{pizza.second_ingredients}</td></> :
-                            <><td>{pizza.ingredients} |</td>  <td>{pizza.second_ingredients}</td> <td>NO Sauce</td></>
+                            <><td>{pizza.ingredients} |</td>  <td>{pizza.second_ingredients}</td> <td>NO Tomato</td></>
                     }
                     <td>{pizza.price}$</td>
                 </li>);
@@ -84,9 +84,9 @@ class OrderRow extends React.Component {
                 <tr onClick={() => { this.getPizzaList(); this.setState({ arrowdown: !this.state.arrowdown }) }} onMouseOver={() => this.setState({ showArrow: true })} onMouseOut={() => this.setState({ showArrow: false })}>
                     <td>{order.id_order}</td>
                     {this.state.showArrow ?
-                        <td >x {order.tot_pizza} pizzas <span className={this.state.arrowdown ? "arrow-down" : "arrow-up"}></span></td>
+                        <td >x {order.tot_pizza} pizzas {order.discount ? "(-10%) " : ""}<span className={this.state.arrowdown ? "arrow-down" : "arrow-up"}></span></td>
                         :
-                        <td>x {order.tot_pizza} pizzas</td>
+                        <td>x {order.tot_pizza} pizzas {order.discount ? "(-10%) " : ""}</td>
                     }
                     <td>{order.price}$</td>
 

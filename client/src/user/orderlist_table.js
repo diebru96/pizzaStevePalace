@@ -17,12 +17,18 @@ function OrderListTable(props) {
                 </thead>
                 <tbody className="orderlist">
                     {
-                        (props.orderList !== null) &&
-                        props.orderList.map((order) => {
-                            return (<OrderRow order={order} context={props.context} />)
-                        })
+
+                        ((props.orderList !== null) && (props.orderList.length !== 0)) ?
+
+                            props.orderList.map((order) => {
+                                return (<OrderRow order={order} context={props.context} />)
+                            })
+                            :
+                            <tr><td></td><td>no past orders found</td><td></td></tr>
+
                     }
                 </tbody>
+
             </Table>
 
         );

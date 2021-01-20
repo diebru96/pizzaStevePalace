@@ -85,9 +85,9 @@ A total price is updated and displayed. Red errors about availability issues are
 
 
 ## Test users
-
-* username, password
-* username, password
-* username, password (frequent customer)
-* username, password
-* username, password (frequent customer)
+### username, email, password (email and password required to login)
+* diego, die@die.it, password (2 orders)
+* s267806, diebru96@gmail.com, diebru (1 order)
+* test, test@test.it, test (2 orders)
+* giovanni, giovanni@gmail.com, giovanni
+* giorgio, giorgio@gmail.com, giorgio
