@@ -11,7 +11,7 @@ const app = express();
 const jwtSecret = 'somerandomaccesstoken';
 const BASEURI = '/api';
 const expireTime = 700;
-const authErrorObj = { errors: [{ 'param': 'Server', 'msg': 'Authorization error' }] };
+const authErrorObj = { id: -1, 'param': 'Server', 'msg': 'Authorization error' };
 const cookieParser = require('cookie-parser');
 
 app.use(bodyParser.json());

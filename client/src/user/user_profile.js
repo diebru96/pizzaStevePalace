@@ -34,7 +34,9 @@ class UserProfile extends React.Component {
             if (err.id === -1) {
                 this.context.sessionTimedOut();
             }
-            this.setState({ orderList: [], redirect: true, showList: false, firstShow: true });
+            else {
+                this.setState({ orderList: [], redirect: true, showList: false, firstShow: true });
+            }
         });
     }
     render() {

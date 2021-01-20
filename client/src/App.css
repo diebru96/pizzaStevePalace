@@ -325,7 +325,9 @@ background: linear-gradient(180deg, rgba(109,105,105,0.6814075972185749) 0%, rgb
   text-align: start;
 }
 
-
+.App-err{
+  color:rgb(114, 0, 0);
+}
 .loginmessage{
   color: #797979fd;
 }

@@ -216,14 +216,11 @@ class OrderForm extends React.Component {
                 if (err.id === 0) {
                     this.setState({ openErrorDialogue: true, maxS: err.s, maxM: err.m, maxL: err.l, numberOfPizzaError: true, returnErrorMessage: "Sorry not enough available pizzas", });
                 }
+                else if (err.id === -1) {
+                    this.setState({ openErrorDialogue: true, returnErrorMessage: err.errorText, timeOut: true });
+                }
                 else
-                    if (err.id === -1) {
-                        this.setState({ openErrorDialogue: true, returnErrorMessage: err.errorText, timeOut: true });
-                    }
-                    else
-                        this.setState({ openErrorDialogue: true, returnErrorMessage: "ERROR UNKNOWN" });
-
-
+                    this.setState({ openErrorDialogue: true, returnErrorMessage: "Cannot contact server" });
             });
         }
         else {

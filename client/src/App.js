@@ -50,7 +50,7 @@ function scrollFunction() {
 class App extends React.Component {
   constructor(props) {
     super(props);
-    this.state = { ingredients: ["olives", "ham", "bacon", "mushrooms", "egg", "artichokes", "seafood", "chips", "vegetables"], pizzeriaInfos: [], username: "", userlogged: false, showInfos: false, homeHeader: true, message: "", authUser: {}, pizzaReady: false, orderOk: false, available_s: 10, available_m: 8, available_l: 6, timeOut: false, authErr: "" };
+    this.state = { err: "", ingredients: ["olives", "ham", "bacon", "mushrooms", "egg", "artichokes", "seafood", "chips", "vegetables"], pizzeriaInfos: [], username: "", userlogged: false, showInfos: false, homeHeader: true, message: "", authUser: {}, pizzaReady: false, orderOk: false, available_s: 10, available_m: 8, available_l: 6, timeOut: false, authErr: "" };
   }
 
 
@@ -61,8 +61,8 @@ class App extends React.Component {
   ///GET INFOS (passed to availability table)  
   getpizzeriaInfo = () => {
     API.pizzeriaInfos().then((infos) => {
-      this.setState({ pizzeriaInfos: infos, showInfos: true, available_s: infos[0].available_s, available_m: infos[0].available_m, available_l: infos[0].available_l });
-    });
+      this.setState({ err: "", pizzeriaInfos: infos, showInfos: true, available_s: infos[0].available_s, available_m: infos[0].available_m, available_l: infos[0].available_l });
+    }).catch((err) => { this.setState({ err: "Cannot communicate with server" }) });;
   }
 
   /***AUTH FUNCTIONS ****/
@@ -70,11 +70,14 @@ class App extends React.Component {
   checkAuth = () => {
     API.isAuthenticated().then(
       (user) => {
-        this.setState({ authUser: user, userlogged: true, username: user.username, timeOut: false });
+        this.setState({ err: "", authUser: user, userlogged: true, username: user.username, timeOut: false });
       }
     ).catch((err) => {
       //Timeout è per switchare pagina da order e user
-      this.setState({ authUser: {}, userlogged: false, username: "", timeOut: true });
+      if (err.status === 401)
+        this.setState({ authUser: {}, userlogged: false, username: "", timeOut: true });
+      else
+        this.setState({ err: "Cannot reach server", authUser: {}, userlogged: false, username: "", timeOut: true });
       // this.props.history.push("/login");
     });
   }
@@ -82,7 +85,7 @@ class App extends React.Component {
   login = (email, password) => {
     API.userLogin(email, password).then(
       (user) => {
-        this.setState({ authUser: user, username: user.username, userlogged: true, timeOut: false, homeHeader: true });
+        this.setState({ err: "", authUser: user, username: user.username, userlogged: true, timeOut: false, homeHeader: true });
       }
     ).catch(
       (err) => {
@@ -100,7 +103,10 @@ class App extends React.Component {
         ///push back to login
         this.props.history.push("/login");
       }
+      else
+        this.setState({ err: "Cannot comunicate with server" })
     }
+
   }
 
   ///  IF session is timed out i update state and context  
@@ -183,6 +189,7 @@ class App extends React.Component {
           {this.state.homeHeader &&
             <>
               <h1 className="App-h1">Pizza Steve Palace</h1>
+              <h5 className="App-err">{this.state.err}</h5>
             </>
 
           }
@@ -201,6 +208,7 @@ class App extends React.Component {
                     <p class="center">
                       <p className="App-spacer"></p>
                       <h2 className="App-title">List of Ingredients</h2>
+                      <h6 className="App-err">{this.state.err}</h6>
                       <p className="App-spacer2"> </p>
                       <table className="App-table">
                         <thead>
@@ -231,7 +239,7 @@ class App extends React.Component {
                     <p className="App-spacer"></p>
                     <h2 className="App-av-desc">We produce a limited amount of pizzas everyday to guarantee the best product possible to our clients.</h2>
                     <p className="App-spacer3"></p>
-
+                    <h6 className="App-err">{this.state.err}</h6>
                     {this.state.showInfos &&
                       <>
                         <AvailabilityTable pizzeriaInfos={this.state.pizzeriaInfos}></AvailabilityTable>
