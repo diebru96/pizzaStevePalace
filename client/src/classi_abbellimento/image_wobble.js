@@ -1,4 +1,3 @@
-import styles from './abbellimento.css'
 import React from 'react'
 
 

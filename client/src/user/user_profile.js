@@ -31,9 +31,7 @@ class UserProfile extends React.Component {
             else
                 this.setState({ orderList: orders.orders, showList: true, firstShow: false });
         }).catch((err) => {
-            var x = 0;
             if (err.id === -1) {
-                x = -1;
                 this.context.sessionTimedOut();
             }
             this.setState({ orderList: [], redirect: true, showList: false, firstShow: true });
@@ -59,7 +57,7 @@ class UserProfile extends React.Component {
                                 <h1 className="user-title">USER PROFILE</h1>
                                 <p></p>
                                 <div className="user-div">
-                                    <td> <img src="./pizza5.jpg" className="user-image"></img> </td>
+                                    <td> <img src="./pizza5.jpg" className="user-image" alt="profileimage"></img> </td>
                                     <td className="h-space"></td>
                                     <td><tr><h4> USERNAME: {context.authUser.username}</h4> </tr><tr> EMAIL: {context.authUser.email}</tr></td>
                                 </div>

@@ -41,7 +41,7 @@ class PizzaForm extends React.Component {
                 option = [];
             }
         }
-        if ((this.state.type == 0 && option.length <= 2) || (this.state.type === 1 && option.length <= 3) || (this.state.type === 2 && this.state.checkedDivided && option.length <= 3) || (this.state.type === 2 && !this.state.checkedDivided && option.length <= 6)) {
+        if ((this.state.type === 0 && option.length <= 2) || (this.state.type === 1 && option.length <= 3) || (this.state.type === 2 && this.state.checkedDivided && option.length <= 3) || (this.state.type === 2 && !this.state.checkedDivided && option.length <= 6)) {
             let special = false;
             const ingr = option.map((i) => { return (i.label) });
             /// PROBABILMENTE DA TOGLIERE QUESTO SETTAGGIO A VUOTO DI VAL2 O TROVARE MODO PER FORZARE SEAFOOD
@@ -105,19 +105,19 @@ class PizzaForm extends React.Component {
         var special = this.state.special;
         if (option.value != null) {
             type = option.value;
-            if (type == 0 && number > this.state.maxS) {
+            if (type === 0 && number > this.state.maxS) {
                 if (this.state.maxS > 0)
                     number = this.state.maxS;
                 else
                     number = 1;
             }
-            if (type == 1 && number > this.state.maxM) {
+            if (type === 1 && number > this.state.maxM) {
                 if (this.state.maxM > 0)
                     number = this.state.maxM;
                 else
                     number = 1;
             }
-            if (type == 2 && number > this.state.maxL) {
+            if (type === 2 && number > this.state.maxL) {
                 if (this.state.maxL > 0)
                     number = this.state.maxL;
                 else
@@ -193,7 +193,7 @@ class PizzaForm extends React.Component {
 
     /****BUTTONS FOR CHANGE NUMBER (little checks to avoid non sense numbers)**** */
     buttonMore = () => {
-        if ((this.state.type == 0 && this.state.number < this.state.maxS) || (this.state.type == 1 && this.state.number < this.state.maxM) || (this.state.type == 2 && this.state.number < this.state.maxL)) {
+        if ((this.state.type === 0 && this.state.number < this.state.maxS) || (this.state.type === 1 && this.state.number < this.state.maxM) || (this.state.type === 2 && this.state.number < this.state.maxL)) {
             var n = this.state.number + 1;
             this.setState({ number: n })
             this.props.updatePizza(this.props.id, n, this.state.type, this.state.ingredients, this.state.special, this.state.checkedSauce, this.state.ingredients2);
@@ -248,7 +248,7 @@ class PizzaForm extends React.Component {
                     }
 
                 </td>
-                {(this.state.type == 2 && this.state.checkedDivided) ?
+                {(this.state.type === 2 && this.state.checkedDivided) ?
                     <>
                         {
                             this.getLargePizzaSelectDivided(animatedComponents)

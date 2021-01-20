@@ -4,7 +4,7 @@ import Table from 'react-bootstrap/Table'
 
 import Button from 'react-bootstrap/Button';
 import Toast from 'react-bootstrap/Toast';
-import { Redirect, Link } from 'react-router-dom';
+import { Redirect } from 'react-router-dom';
 import API from './../api/API';
 import Pizza from './pizza';
 
@@ -84,7 +84,7 @@ class OrderForm extends React.Component {
         };
 
         let newPizzaList = this.state.pizzaList.map((item) => {
-            if (item.id == id) {
+            if (item.id === id) {
                 return newPizza;
             }
             else
@@ -107,8 +107,10 @@ class OrderForm extends React.Component {
             case 2:
                 standardPrice = 10;
                 break;
-
+            default:
+                standardPrice = 4;
         }
+
         let price = number * standardPrice;
 
         if (special)

@@ -23,7 +23,7 @@ class OrderRow extends React.Component {
                     }
                     else {
                         var pizzalist = (<ul>{this.ListPizzas(pizzas.pizzas)}</ul>);
-                        this.setState({ pizzalist: pizzalist, showPizza: false, firstTime: false, showPizza: true });
+                        this.setState({ pizzalist: pizzalist, firstTime: false, showPizza: true });
                     }
                 }).catch((err) => {
                     if (err.id === -1) {
@@ -57,6 +57,9 @@ class OrderRow extends React.Component {
                     break;
                 case 2:
                     type = "L";
+                    break;
+                default:
+                    type = "S";
                     break;
             }
             return (

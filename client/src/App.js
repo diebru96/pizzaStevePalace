@@ -11,7 +11,6 @@ import {
   Switch,
   Route,
   Link,
-  Redirect
 } from "react-router-dom";
 import LoginForm from './auth/login_form';
 import OrderForm from './order/order_form';
@@ -96,7 +95,7 @@ class App extends React.Component {
     if (err) {
       ///case 0 EMAIL non esistente
       ///case 1 PASSWORD ERRATA
-      if (err.errorid == 0 || err.errorid == 1) {
+      if (err.errorid === 0 || err.errorid === 1) {
         this.setState({ authErr: err.message });
         ///push back to login
         this.props.history.push("/login");
