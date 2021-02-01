@@ -6,7 +6,7 @@
 - Route `/`: Home, main page accessible to everyone(auth or not), contains the list of ingredients and the pizza availability (if requested). A navigator is provided to scroll to ingredients (`/#menu`) and  to availability(`/#availability`) in this 2nd case the availability is automatically requested.
 - Route `/login`: login page, a react form with 2 fields (email and password)
 - Route `/signup`: signup page, a react form with 3 fields (username, email and password)
-- Route `/order`: The page to create and submit your order. It is a table in which you can add ass many pizza form as you wish with an add button. The single pizza forms will allow you to select the size, the number of pizzas, the ingredients and if you want tomato or not. A total price is shown and costantly updated, and red writings advertise you if you are selecting to many pizzas for a given size. An error dialogue is shown whenever there is a server error or you missed something important to submit your order.
+- Route `/order`: The page to create and submit your order. It is a table in which you can add as many pizza form as you wish with an add button. The single pizza forms will allow you to select the size, the number of pizzas, the ingredients and if you want tomato or not. A total price is shown and costantly updated, and red writings advertise you if you are selecting to many pizzas for a given size. An error dialogue is shown whenever there is a server error or you missed something important to submit your order.
 - Route `/userprofile`: The page with the user datas. An image with username and password is provided, and if the user wants he can check the list of past orders. This list display an order per row. By clicking on the order a detailed view with all the pizzas ordered for the given order is provided.
 
 ## REST API server
@@ -27,10 +27,10 @@
 - POST `/api/order` : before the order is created a check is done on the availability
   - request parameters and request body content : the body of the req contains the whole order(total price, total number of pizzas, discount bool,total number of S, total number of M, total number of L and the list of pizzas), once the order is created, the id is taken and used to create all the pizzas
   - response body content: if there are not enough pizzas an error is returned with id=0 and the availability of the pizzas per size, else the id of the order is returned and the availability is updated.
-- GET `/api//orderlist`
+- GET `/api/orderlist`
   - request parameters: none, the id of the user is extracted from the cookie 
   - response body content: a response id =1 in case of success and a list of orders (id, tot_pizza, price, discount)  
-- GET `/api//pizzaorder/:id`
+- GET `/api/pizzaorder/:id`
   - request parameters : id of the order
   - response body content: a response id =1 in case of success and a list of pizzas (content of table pizza) 
 
